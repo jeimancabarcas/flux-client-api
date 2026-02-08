@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
 import { UserRole } from '../../../../../../common/enums/user-role.enum';
 import { UserDetailsTypeOrmEntity } from './user-details.typeorm-entity';
 
@@ -23,4 +23,7 @@ export class UserTypeOrmEntity {
     @OneToOne(() => UserDetailsTypeOrmEntity, { cascade: true, eager: true })
     @JoinColumn()
     details: UserDetailsTypeOrmEntity;
+
+    @DeleteDateColumn({ name: 'deleted_at' })
+    deletedAt: Date;
 }

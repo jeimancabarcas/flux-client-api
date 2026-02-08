@@ -23,6 +23,7 @@ export class UserMapper {
             entity.password,
             entity.role,
             details,
+            entity.deletedAt,
         );
     }
 
@@ -34,6 +35,9 @@ export class UserMapper {
         entity.email = domain.email;
         entity.password = domain.password;
         entity.role = domain.role;
+        if (domain.deletedAt) {
+            entity.deletedAt = domain.deletedAt;
+        }
 
         if (domain.details) {
             const detailsEntity = new UserDetailsTypeOrmEntity();

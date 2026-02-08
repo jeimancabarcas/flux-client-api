@@ -1,7 +1,9 @@
-import { Controller, Post, Body, Get, UseGuards, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Patch, Delete, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.use-case';
+import { ListUsersUseCase } from '../../application/use-cases/list-users.use-case';
+import { DeleteUserUseCase } from '../../application/use-cases/delete-user.use-case';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateProfileDto } from '../dtos/update-profile.dto';
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt-auth.guard';
@@ -11,8 +13,6 @@ import { GetUser } from '../../../../common/decorators/get-user.decorator';
 import { UserRole } from '../../../../common/enums/user-role.enum';
 import { UserMapper } from '../persistence/typeorm/mappers/user.mapper';
 
-import { ListUsersUseCase } from '../../application/use-cases/list-users.use-case';
-
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
@@ -21,6 +21,7 @@ export class UsersController {
         private readonly createUserUseCase: CreateUserUseCase,
         private readonly updateProfileUseCase: UpdateProfileUseCase,
         private readonly listUsersUseCase: ListUsersUseCase,
+        private readonly deleteUserUseCase: DeleteUserUseCase,
     ) { }
 
     @Post()
@@ -56,6 +57,16 @@ export class UsersController {
     @ApiResponse({ status: 200, description: 'Lista de usuarios recuperada.' })
     async findAll() {
         const users = await this.listUsersUseCase.execute();
-        return users.map(user => UserMapper.toResponse(user));
+        return users.map((user) => UserMapper.toResponse(user));
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({ summary: 'Eliminar un usuario (Soft Delete - Solo ADMIN)' })
+    @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente.' })
+    @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+    async remove(@Param('id') id: string) {
+        return this.deleteUserUseCase.execute(id);
     }
 }

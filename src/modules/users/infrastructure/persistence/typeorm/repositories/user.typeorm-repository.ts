@@ -36,12 +36,16 @@ export class UserTypeOrmRepository implements IUserRepository {
 
     async update(id: string, user: User): Promise<User> {
         const entity = UserMapper.toPersistence(user);
-        entity.id = id; // Ensure we are updating the correct record
+        entity.id = id;
         const updatedEntity = await this.repository.save(entity);
         return UserMapper.toDomain(updatedEntity);
     }
 
     async delete(id: string): Promise<void> {
         await this.repository.delete(id);
+    }
+
+    async softDelete(id: string): Promise<void> {
+        await this.repository.softDelete(id);
     }
 }

@@ -7,6 +7,7 @@ export interface IUserRepository {
     findAll(): Promise<User[]>;
     update(id: string, user: User): Promise<User>;
     delete(id: string): Promise<void>;
+    softDelete(id: string): Promise<void>;
 }
 
 export const IUSER_REPOSITORY = Symbol('IUserRepository');

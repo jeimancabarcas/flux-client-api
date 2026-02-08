@@ -8,5 +8,6 @@ export class User {
         public password: string,
         public role: UserRole,
         public details: UserDetails | null = null,
+        public deletedAt: Date | null = null,
     ) { }
 }
