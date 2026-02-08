@@ -5,6 +5,7 @@ import { PatientsController } from './infrastructure/controllers/patients.contro
 import { RegisterPatientUseCase } from './application/use-cases/register-patient.use-case';
 import { GetPatientSummaryUseCase } from './application/use-cases/get-patient-summary.use-case';
 import { SearchPatientUseCase } from './application/use-cases/search-patient.use-case';
+import { ListPatientsUseCase } from './application/use-cases/list-patients.use-case';
 import { IPATIENT_REPOSITORY } from './domain/repositories/patient.repository.interface';
 import { TypeOrmPatientRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-patient.repository';
 
@@ -15,6 +16,7 @@ import { TypeOrmPatientRepository } from './infrastructure/persistence/typeorm/r
         RegisterPatientUseCase,
         GetPatientSummaryUseCase,
         SearchPatientUseCase,
+        ListPatientsUseCase,
         {
             provide: IPATIENT_REPOSITORY,
             useClass: TypeOrmPatientRepository,

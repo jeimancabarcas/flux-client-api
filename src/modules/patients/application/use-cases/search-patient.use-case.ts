@@ -10,6 +10,7 @@ export class SearchPatientUseCase {
     ) { }
 
     async execute(query: string): Promise<Patient[]> {
-        return this.patientRepository.findAll({ search: query });
+        const { data } = await this.patientRepository.findAll({ search: query });
+        return data;
     }
 }

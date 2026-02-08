@@ -1,8 +1,9 @@
 import { Controller, Post, Get, Body, Param, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { RegisterPatientUseCase } from '../../application/use-cases/register-patient.use-case';
 import { GetPatientSummaryUseCase } from '../../application/use-cases/get-patient-summary.use-case';
 import { SearchPatientUseCase } from '../../application/use-cases/search-patient.use-case';
+import { ListPatientsUseCase } from '../../application/use-cases/list-patients.use-case';
 import { CreatePatientDto } from '../dtos/create-patient.dto';
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
@@ -18,6 +19,7 @@ export class PatientsController {
         private readonly registerPatientUseCase: RegisterPatientUseCase,
         private readonly getPatientSummaryUseCase: GetPatientSummaryUseCase,
         private readonly searchPatientUseCase: SearchPatientUseCase,
+        private readonly listPatientsUseCase: ListPatientsUseCase,
     ) { }
 
     @Post()
@@ -26,6 +28,20 @@ export class PatientsController {
     @ApiResponse({ status: 201, description: 'Paciente registrado exitosamente.' })
     async create(@Body() dto: CreatePatientDto) {
         return this.registerPatientUseCase.execute(dto);
+    }
+
+    @Get()
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA, UserRole.MEDICO)
+    @ApiOperation({ summary: 'Listar pacientes con paginación' })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    @ApiQuery({ name: 'search', required: false, type: String })
+    async findAll(
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+        @Query('search') search?: string,
+    ) {
+        return this.listPatientsUseCase.execute(Number(page) || 1, Number(limit) || 10, search);
     }
 
     @Get('search')
