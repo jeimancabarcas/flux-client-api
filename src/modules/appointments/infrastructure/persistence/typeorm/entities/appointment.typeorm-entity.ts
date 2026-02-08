@@ -33,6 +33,12 @@ export class AppointmentTypeOrmEntity {
     @Column({ type: 'text', nullable: true })
     notes: string | null;
 
+    @Column({ name: 'actual_start_time', type: 'timestamp', nullable: true })
+    actualStartTime: Date | null;
+
+    @Column({ name: 'actual_end_time', type: 'timestamp', nullable: true })
+    actualEndTime: Date | null;
+
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 

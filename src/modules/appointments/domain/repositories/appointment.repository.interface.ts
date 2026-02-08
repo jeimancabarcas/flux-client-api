@@ -16,7 +16,6 @@ export interface IAppointmentRepository {
         start?: Date;
         end?: Date;
     }): Promise<Appointment[]>;
-    updateStatus(id: string, status: AppointmentStatus): Promise<void>;
 }
 
 export const IAPPOINTMENT_REPOSITORY = Symbol('IAppointmentRepository');

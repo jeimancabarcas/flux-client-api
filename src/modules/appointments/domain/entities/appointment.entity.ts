@@ -10,6 +10,8 @@ export class Appointment {
         public readonly status: AppointmentStatus,
         public readonly reason: string | null,
         public readonly notes: string | null,
+        public readonly actualStartTime: Date | null = null,
+        public readonly actualEndTime: Date | null = null,
         public readonly createdAt: Date | null = null,
         public readonly updatedAt: Date | null = null,
     ) { }

@@ -1,10 +1,13 @@
 import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ScheduleAppointmentUseCase } from '../../application/use-cases/schedule-appointment.use-case';
-import { UpdateAppointmentStatusUseCase } from '../../application/use-cases/update-appointment-status.use-case';
+import { StartAppointmentUseCase } from '../../application/use-cases/start-appointment.use-case';
+import { CompleteAppointmentUseCase } from '../../application/use-cases/complete-appointment.use-case';
+import { CancelAppointmentUseCase } from '../../application/use-cases/cancel-appointment.use-case';
 import { ListAppointmentsUseCase } from '../../application/use-cases/list-appointments.use-case';
 import { CreateAppointmentDto } from '../dtos/create-appointment.dto';
-import { UpdateAppointmentStatusDto } from '../dtos/update-appointment-status.dto';
+import { CompleteAppointmentDto } from '../dtos/complete-appointment.dto';
+import { CancelAppointmentDto } from '../dtos/cancel-appointment.dto';
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
@@ -18,7 +21,9 @@ import { AppointmentStatus } from '../../domain/entities/appointment-status.enum
 export class AppointmentsController {
     constructor(
         private readonly scheduleAppointmentUseCase: ScheduleAppointmentUseCase,
-        private readonly updateAppointmentStatusUseCase: UpdateAppointmentStatusUseCase,
+        private readonly startAppointmentUseCase: StartAppointmentUseCase,
+        private readonly completeAppointmentUseCase: CompleteAppointmentUseCase,
+        private readonly cancelAppointmentUseCase: CancelAppointmentUseCase,
         private readonly listAppointmentsUseCase: ListAppointmentsUseCase,
     ) { }
 
@@ -52,14 +57,32 @@ export class AppointmentsController {
         });
     }
 
-    @Patch(':id/status')
-    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA, UserRole.MEDICO)
-    @ApiOperation({ summary: 'Actualizar estado de una cita' })
-    async updateStatus(
+    @Patch(':id/start')
+    @Roles(UserRole.ADMIN, UserRole.MEDICO)
+    @ApiOperation({ summary: 'Iniciar consulta (Médico)' })
+    async start(@Param('id') id: string, @Request() req: any) {
+        return this.startAppointmentUseCase.execute(id, req.user);
+    }
+
+    @Patch(':id/complete')
+    @Roles(UserRole.ADMIN, UserRole.MEDICO)
+    @ApiOperation({ summary: 'Completar consulta (Médico)' })
+    async complete(
         @Param('id') id: string,
-        @Body() dto: UpdateAppointmentStatusDto,
+        @Body() dto: CompleteAppointmentDto,
         @Request() req: any,
     ) {
-        return this.updateAppointmentStatusUseCase.execute(id, dto.status, req.user);
+        return this.completeAppointmentUseCase.execute(id, req.user, dto.notes);
+    }
+
+    @Patch(':id/cancel')
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA, UserRole.MEDICO)
+    @ApiOperation({ summary: 'Cancelar cita (Cualquier rol permitido)' })
+    async cancel(
+        @Param('id') id: string,
+        @Body() dto: CancelAppointmentDto,
+        @Request() req: any,
+    ) {
+        return this.cancelAppointmentUseCase.execute(id, req.user, dto.reason);
     }
 }

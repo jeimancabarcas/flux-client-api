@@ -1,0 +1,54 @@
+import { Inject, Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { IAPPOINTMENT_REPOSITORY, type IAppointmentRepository } from '../../domain/repositories/appointment.repository.interface';
+import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
+import { Appointment } from '../../domain/entities/appointment.entity';
+import { UserRole } from '../../../../common/enums/user-role.enum';
+
+@Injectable()
+export class StartAppointmentUseCase {
+    constructor(
+        @Inject(IAPPOINTMENT_REPOSITORY)
+        private readonly appointmentRepository: IAppointmentRepository,
+    ) { }
+
+    async execute(
+        appointmentId: string,
+        user: { id: string; role: string },
+    ): Promise<void> {
+        const appointment = await this.appointmentRepository.findById(appointmentId);
+
+        if (!appointment) {
+            throw new NotFoundException('Cita no encontrada');
+        }
+
+        // Solo el médico asignado o un Admin pueden iniciar la cita
+        if (user.role === UserRole.MEDICO && appointment.doctorId !== user.id) {
+            throw new ForbiddenException('No puedes iniciar las citas de otro médico.');
+        }
+
+        if (user.role !== UserRole.MEDICO && user.role !== UserRole.ADMIN) {
+            throw new ForbiddenException('Solo el médico o un administrador pueden iniciar la cita.');
+        }
+
+        if (appointment.status !== AppointmentStatus.PENDIENTE) {
+            throw new ForbiddenException('Solo se pueden iniciar citas en estado PENDIENTE.');
+        }
+
+        const updatedAppointment = new Appointment(
+            appointment.id,
+            appointment.patientId,
+            appointment.doctorId,
+            appointment.startTime,
+            appointment.endTime,
+            AppointmentStatus.EN_CONSULTA,
+            appointment.reason,
+            appointment.notes,
+            new Date(), // Captura inicio real
+            appointment.actualEndTime,
+            appointment.createdAt,
+            new Date(),
+        );
+
+        await this.appointmentRepository.save(updatedAppointment);
+    }
+}

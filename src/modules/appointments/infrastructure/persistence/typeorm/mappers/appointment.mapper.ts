@@ -12,6 +12,8 @@ export class AppointmentMapper {
             entity.status,
             entity.reason,
             entity.notes,
+            entity.actualStartTime,
+            entity.actualEndTime,
             entity.createdAt,
             entity.updatedAt,
         );
@@ -27,6 +29,8 @@ export class AppointmentMapper {
         entity.status = domain.status;
         entity.reason = domain.reason;
         entity.notes = domain.notes;
+        entity.actualStartTime = domain.actualStartTime;
+        entity.actualEndTime = domain.actualEndTime;
         return entity;
     }
 }

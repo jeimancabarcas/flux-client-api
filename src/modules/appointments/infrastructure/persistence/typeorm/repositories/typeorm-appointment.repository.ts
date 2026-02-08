@@ -30,8 +30,6 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
         start: Date,
         end: Date,
     ): Promise<Appointment[]> {
-        // Busca citas que se solapen:
-        // (StartA < EndB) AND (EndA > StartB)
         const entities = await this.repository.createQueryBuilder('appointment')
             .where('appointment.doctorId = :doctorId', { doctorId })
             .andWhere('appointment.status NOT IN (:...excludedStatuses)', {
@@ -67,9 +65,5 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
 
         const entities = await qb.getMany();
         return entities.map(AppointmentMapper.toDomain);
-    }
-
-    async updateStatus(id: string, status: AppointmentStatus): Promise<void> {
-        await this.repository.update(id, { status });
     }
 }

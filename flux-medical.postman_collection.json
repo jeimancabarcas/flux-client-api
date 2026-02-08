@@ -504,7 +504,42 @@
                     "response": []
                 },
                 {
-                    "name": "Cambiar Estado (Medico/Recep)",
+                    "name": "Iniciar Consulta",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/:id/start",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                ":id",
+                                "start"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Completar Consulta",
                     "request": {
                         "auth": {
                             "type": "bearer",
@@ -520,7 +555,7 @@
                         "header": [],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"status\": \"EN_CONSULTA\"\n}",
+                            "raw": "{\n    \"notes\": \"Paciente estable, se receta reposo.\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -528,14 +563,58 @@
                             }
                         },
                         "url": {
-                            "raw": "{{base_url}}/appointments/:id/status",
+                            "raw": "{{base_url}}/appointments/:id/complete",
                             "host": [
                                 "{{base_url}}"
                             ],
                             "path": [
                                 "appointments",
                                 ":id",
-                                "status"
+                                "complete"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancelar Cita",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"reason\": \"Paciente no asistió.\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/appointments/:id/cancel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                ":id",
+                                "cancel"
                             ],
                             "variable": [
                                 {
