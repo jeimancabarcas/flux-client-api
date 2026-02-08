@@ -13,14 +13,25 @@ export class CreateUserUseCase {
     ) { }
 
     async execute(dto: CreateUserDto): Promise<User> {
-        const existingUser = await this.userRepository.findByEmail(dto.email);
-        if (existingUser) {
-            throw new ConflictException('Email already exists');
+        // Check if email exists (including soft-deleted)
+        const existingUserByEmail = await this.userRepository.findByEmail(dto.email, true);
+        if (existingUserByEmail) {
+            const status = existingUserByEmail.deletedAt ? 'ELIMINADO (en papelera)' : 'ACTIVO';
+            throw new ConflictException(`El email ${dto.email} ya existe en el sistema con estado: ${status}.`);
+        }
+
+        // Check if cedula exists (including soft-deleted)
+        if (dto.cedula) {
+            const existingUserByCedula = await this.userRepository.findByCedula(dto.cedula, true);
+            if (existingUserByCedula) {
+                const status = existingUserByCedula.deletedAt ? 'ELIMINADO (en papelera)' : 'ACTIVO';
+                throw new ConflictException(`La cédula ${dto.cedula} ya existe vinculada a un usuario con estado: ${status}.`);
+            }
         }
 
         const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-        // Create details only if at least one detail field is provided
+        // Create details if any field is provided
         let details: UserDetails | null = null;
         if (this.hasAnyDetail(dto)) {
             details = new UserDetails(

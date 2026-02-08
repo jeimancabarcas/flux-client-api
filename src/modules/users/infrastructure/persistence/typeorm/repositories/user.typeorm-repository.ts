@@ -19,13 +19,24 @@ export class UserTypeOrmRepository implements IUserRepository {
         return UserMapper.toDomain(savedEntity);
     }
 
-    async findByEmail(email: string): Promise<User | null> {
-        const entity = await this.repository.findOne({ where: { email } });
+    async findByEmail(email: string, withDeleted = false): Promise<User | null> {
+        const entity = await this.repository.findOne({
+            where: { email },
+            withDeleted,
+        });
         return entity ? UserMapper.toDomain(entity) : null;
     }
 
     async findById(id: string): Promise<User | null> {
         const entity = await this.repository.findOne({ where: { id } });
+        return entity ? UserMapper.toDomain(entity) : null;
+    }
+
+    async findByCedula(cedula: string, withDeleted = false): Promise<User | null> {
+        const entity = await this.repository.findOne({
+            where: { details: { cedula } },
+            withDeleted,
+        });
         return entity ? UserMapper.toDomain(entity) : null;
     }
 

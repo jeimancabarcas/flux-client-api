@@ -19,12 +19,10 @@ export class UpdateProfileUseCase {
 
         // Check if cedula is being updated and if it's already in use by another user
         if (dto.cedula) {
-            const allUsers = await this.userRepository.findAll();
-            const existingUserWithCedula = allUsers.find(
-                (u) => u.details?.cedula === dto.cedula && u.id !== userId,
-            );
+            // Check even in soft-deleted users
+            const existingUserWithCedula = await this.userRepository.findByCedula(dto.cedula, true);
 
-            if (existingUserWithCedula) {
+            if (existingUserWithCedula && existingUserWithCedula.id !== userId) {
                 throw new ConflictException(`La cédula ${dto.cedula} ya está registrada por otro usuario.`);
             }
         }
