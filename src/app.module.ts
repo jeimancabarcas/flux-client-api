@@ -8,6 +8,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { PatientsModule } from './modules/patients/patients.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { AuditInterceptor } from './modules/audit/infrastructure/interceptors/audit.interceptor';
 
 @Module({
@@ -36,6 +37,7 @@ import { AuditInterceptor } from './modules/audit/infrastructure/interceptors/au
     AuthModule,
     AuditModule,
     PatientsModule,
+    AppointmentsModule,
   ],
   controllers: [AppController],
   providers: [
