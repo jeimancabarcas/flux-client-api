@@ -34,12 +34,10 @@ export class UserTypeOrmRepository implements IUserRepository {
         return entities.map(UserMapper.toDomain);
     }
 
-    async update(id: string, user: Partial<User>): Promise<User> {
-        await this.repository.update(id, user as any);
-        const updatedEntity = await this.repository.findOne({ where: { id } });
-        if (!updatedEntity) {
-            throw new Error('User not found after update');
-        }
+    async update(id: string, user: User): Promise<User> {
+        const entity = UserMapper.toPersistence(user);
+        entity.id = id; // Ensure we are updating the correct record
+        const updatedEntity = await this.repository.save(entity);
         return UserMapper.toDomain(updatedEntity);
     }
 

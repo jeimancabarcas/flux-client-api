@@ -51,4 +51,9 @@ export class UserMapper {
 
         return entity;
     }
+
+    static toResponse(user: User) {
+        const { password, ...safeUser } = user;
+        return safeUser;
+    }
 }

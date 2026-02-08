@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { User } from '../../domain/entities/user.entity';
 import { UserDetails } from '../../domain/entities/user-details.entity';
 import { IUSER_REPOSITORY, type IUserRepository } from '../../domain/repositories/user.repository.interface';
@@ -11,10 +11,22 @@ export class UpdateProfileUseCase {
         private readonly userRepository: IUserRepository,
     ) { }
 
-    async execute(userId: string, dto: UpdateProfileDto): Promise<User> {
+    async execute(userId: string, dto: UpdateProfileDto, requesterRole: string): Promise<User> {
         const user = await this.userRepository.findById(userId);
         if (!user) {
             throw new NotFoundException('User not found');
+        }
+
+        // Check if cedula is being updated and if it's already in use by another user
+        if (dto.cedula) {
+            const allUsers = await this.userRepository.findAll();
+            const existingUserWithCedula = allUsers.find(
+                (u) => u.details?.cedula === dto.cedula && u.id !== userId,
+            );
+
+            if (existingUserWithCedula) {
+                throw new ConflictException(`La cédula ${dto.cedula} ya está registrada por otro usuario.`);
+            }
         }
 
         // Handle personal details
@@ -29,7 +41,14 @@ export class UpdateProfileUseCase {
                 dto.telefono ?? null,
             );
         } else {
-            if (dto.cedula) user.details.cedula = dto.cedula;
+            // Logic for updating existing details
+            if (dto.cedula) {
+                // Only allow changing cedula if it's empty OR the requester is an ADMIN
+                if (!user.details.cedula || requesterRole === 'ADMIN') {
+                    user.details.cedula = dto.cedula;
+                }
+            }
+
             if (dto.nombre) user.details.nombre = dto.nombre;
             if (dto.apellido) user.details.apellido = dto.apellido;
             if (dto.direccionPrincipal) user.details.direccionPrincipal = dto.direccionPrincipal;

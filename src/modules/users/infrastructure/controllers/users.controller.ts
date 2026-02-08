@@ -9,6 +9,9 @@ import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
 import { GetUser } from '../../../../common/decorators/get-user.decorator';
 import { UserRole } from '../../../../common/enums/user-role.enum';
+import { UserMapper } from '../persistence/typeorm/mappers/user.mapper';
+
+import { ListUsersUseCase } from '../../application/use-cases/list-users.use-case';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -17,6 +20,7 @@ export class UsersController {
     constructor(
         private readonly createUserUseCase: CreateUserUseCase,
         private readonly updateProfileUseCase: UpdateProfileUseCase,
+        private readonly listUsersUseCase: ListUsersUseCase,
     ) { }
 
     @Post()
@@ -27,7 +31,8 @@ export class UsersController {
     @ApiResponse({ status: 403, description: 'Prohibido por falta de permisos.' })
     @ApiResponse({ status: 409, description: 'El email ya existe.' })
     async create(@Body() createUserDto: CreateUserDto) {
-        return this.createUserUseCase.execute(createUserDto);
+        const user = await this.createUserUseCase.execute(createUserDto);
+        return UserMapper.toResponse(user);
     }
 
     @Patch('profile')
@@ -37,9 +42,11 @@ export class UsersController {
     @ApiResponse({ status: 401, description: 'No autorizado.' })
     async updateProfile(
         @GetUser('id') userId: string,
+        @GetUser('role') role: string,
         @Body() updateProfileDto: UpdateProfileDto,
     ) {
-        return this.updateProfileUseCase.execute(userId, updateProfileDto);
+        const user = await this.updateProfileUseCase.execute(userId, updateProfileDto, role);
+        return UserMapper.toResponse(user);
     }
 
     @Get()
@@ -48,6 +55,7 @@ export class UsersController {
     @ApiOperation({ summary: 'Listar todos los usuarios' })
     @ApiResponse({ status: 200, description: 'Lista de usuarios recuperada.' })
     async findAll() {
-        return { message: 'List users' };
+        const users = await this.listUsersUseCase.execute();
+        return users.map(user => UserMapper.toResponse(user));
     }
 }
