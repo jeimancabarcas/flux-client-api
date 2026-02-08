@@ -45,6 +45,11 @@ export class UserTypeOrmRepository implements IUserRepository {
         return entities.map(UserMapper.toDomain);
     }
 
+    async findByRole(role: string): Promise<User[]> {
+        const entities = await this.repository.find({ where: { role } as any });
+        return entities.map(UserMapper.toDomain);
+    }
+
     async update(id: string, user: User): Promise<User> {
         const entity = UserMapper.toPersistence(user);
         entity.id = id;

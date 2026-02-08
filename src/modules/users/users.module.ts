@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
 import { UpdateProfileUseCase } from './application/use-cases/update-profile.use-case';
 import { ListUsersUseCase } from './application/use-cases/list-users.use-case';
+import { ListDoctorsUseCase } from './application/use-cases/list-doctors.use-case';
 import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case';
 import { UserTypeOrmEntity } from './infrastructure/persistence/typeorm/entities/user.typeorm-entity';
 import { UserDetailsTypeOrmEntity } from './infrastructure/persistence/typeorm/entities/user-details.typeorm-entity';
@@ -17,6 +18,7 @@ import { UsersController } from './infrastructure/controllers/users.controller';
         CreateUserUseCase,
         UpdateProfileUseCase,
         ListUsersUseCase,
+        ListDoctorsUseCase,
         DeleteUserUseCase,
         {
             provide: IUSER_REPOSITORY,

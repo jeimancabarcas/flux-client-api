@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.use-case';
 import { ListUsersUseCase } from '../../application/use-cases/list-users.use-case';
+import { ListDoctorsUseCase } from '../../application/use-cases/list-doctors.use-case';
 import { DeleteUserUseCase } from '../../application/use-cases/delete-user.use-case';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateProfileDto } from '../dtos/update-profile.dto';
@@ -21,6 +22,7 @@ export class UsersController {
         private readonly createUserUseCase: CreateUserUseCase,
         private readonly updateProfileUseCase: UpdateProfileUseCase,
         private readonly listUsersUseCase: ListUsersUseCase,
+        private readonly listDoctorsUseCase: ListDoctorsUseCase,
         private readonly deleteUserUseCase: DeleteUserUseCase,
     ) { }
 
@@ -52,11 +54,21 @@ export class UsersController {
 
     @Get()
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
-    @ApiOperation({ summary: 'Listar todos los usuarios' })
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({ summary: 'Listar todos los usuarios (Solo ADMIN)' })
     @ApiResponse({ status: 200, description: 'Lista de usuarios recuperada.' })
     async findAll() {
         const users = await this.listUsersUseCase.execute();
+        return users.map((user) => UserMapper.toResponse(user));
+    }
+
+    @Get('doctors')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
+    @ApiOperation({ summary: 'Listar solo los médicos (ADMIN y RECEPCIONISTA)' })
+    @ApiResponse({ status: 200, description: 'Lista de médicos recuperada.' })
+    async findAllDoctors() {
+        const users = await this.listDoctorsUseCase.execute();
         return users.map((user) => UserMapper.toResponse(user));
     }
 

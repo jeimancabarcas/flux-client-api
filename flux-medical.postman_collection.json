@@ -214,7 +214,7 @@
                     "response": []
                 },
                 {
-                    "name": "Listar Usuarios (Admin/Rec)",
+                    "name": "Listar Usuarios (Solo Admin)",
                     "request": {
                         "auth": {
                             "type": "bearer",
@@ -235,6 +235,34 @@
                             ],
                             "path": [
                                 "users"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Listar Médicos (Admin/Rec)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/doctors",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                "doctors"
                             ]
                         }
                     },
