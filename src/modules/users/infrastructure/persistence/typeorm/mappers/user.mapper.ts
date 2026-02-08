@@ -2,6 +2,7 @@ import { User } from '../../../../domain/entities/user.entity';
 import { UserDetails } from '../../../../domain/entities/user-details.entity';
 import { UserTypeOrmEntity } from '../entities/user.typeorm-entity';
 import { UserDetailsTypeOrmEntity } from '../entities/user-details.typeorm-entity';
+import { SpecialtyMapper } from './specialty.mapper';
 
 export class UserMapper {
     static toDomain(entity: UserTypeOrmEntity): User {
@@ -17,12 +18,17 @@ export class UserMapper {
             )
             : null;
 
+        const specialties = entity.specialties
+            ? entity.specialties.map(SpecialtyMapper.toDomain)
+            : [];
+
         return new User(
             entity.id,
             entity.email,
             entity.password,
             entity.role,
             details,
+            specialties,
             entity.deletedAt,
         );
     }
@@ -51,6 +57,10 @@ export class UserMapper {
             detailsEntity.direccionSecundaria = domain.details.direccionSecundaria;
             detailsEntity.telefono = domain.details.telefono;
             entity.details = detailsEntity;
+        }
+
+        if (domain.specialties) {
+            entity.specialties = domain.specialties.map(SpecialtyMapper.toPersistence);
         }
 
         return entity;

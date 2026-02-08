@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, DeleteDateColumn, ManyToMany, JoinTable } from 'typeorm';
 import { UserRole } from '../../../../../../common/enums/user-role.enum';
 import { UserDetailsTypeOrmEntity } from './user-details.typeorm-entity';
+import { SpecialtyTypeOrmEntity } from './specialty.typeorm-entity';
 
 @Entity({ name: 'users', schema: 'fluxmedical' })
 export class UserTypeOrmEntity {
@@ -23,6 +24,15 @@ export class UserTypeOrmEntity {
     @OneToOne(() => UserDetailsTypeOrmEntity, { cascade: true, eager: true })
     @JoinColumn()
     details: UserDetailsTypeOrmEntity;
+
+    @ManyToMany(() => SpecialtyTypeOrmEntity)
+    @JoinTable({
+        name: 'user_specialties',
+        joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'specialty_id', referencedColumnName: 'id' },
+        schema: 'fluxmedical'
+    })
+    specialties: SpecialtyTypeOrmEntity[];
 
     @DeleteDateColumn({ name: 'deleted_at' })
     deletedAt: Date;

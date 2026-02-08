@@ -22,31 +22,41 @@ export class UserTypeOrmRepository implements IUserRepository {
     async findByEmail(email: string, withDeleted = false): Promise<User | null> {
         const entity = await this.repository.findOne({
             where: { email },
+            relations: ['specialties'],
             withDeleted,
         });
         return entity ? UserMapper.toDomain(entity) : null;
     }
 
     async findById(id: string): Promise<User | null> {
-        const entity = await this.repository.findOne({ where: { id } });
+        const entity = await this.repository.findOne({
+            where: { id },
+            relations: ['specialties']
+        });
         return entity ? UserMapper.toDomain(entity) : null;
     }
 
     async findByCedula(cedula: string, withDeleted = false): Promise<User | null> {
         const entity = await this.repository.findOne({
             where: { details: { cedula } },
+            relations: ['specialties'],
             withDeleted,
         });
         return entity ? UserMapper.toDomain(entity) : null;
     }
 
     async findAll(): Promise<User[]> {
-        const entities = await this.repository.find();
+        const entities = await this.repository.find({
+            relations: ['specialties']
+        });
         return entities.map(UserMapper.toDomain);
     }
 
     async findByRole(role: string): Promise<User[]> {
-        const entities = await this.repository.find({ where: { role } as any });
+        const entities = await this.repository.find({
+            where: { role } as any,
+            relations: ['specialties']
+        });
         return entities.map(UserMapper.toDomain);
     }
 

@@ -305,6 +305,118 @@
             ]
         },
         {
+            "name": "Specialties",
+            "item": [
+                {
+                    "name": "Crear Especialidad (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Cardiología\",\n    \"description\": \"Especialidad médica que se ocupa de las afecciones del corazón y del aparato circulatorio.\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/specialties",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "specialties"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Listar Especialidades",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/specialties",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "specialties"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Asignar Especialidades a Médico (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"specialtyIds\": [\"uuid-especialidad-1\", \"uuid-especialidad-2\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/specialties/assign/:doctorId",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "specialties",
+                                "assign",
+                                ":doctorId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "doctorId",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
             "name": "Patients",
             "item": [
                 {

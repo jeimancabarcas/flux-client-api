@@ -1,5 +1,6 @@
 import { UserRole } from '../../../../common/enums/user-role.enum';
 import { UserDetails } from './user-details.entity';
+import { Specialty } from './specialty.entity';
 
 export class User {
     constructor(
@@ -8,6 +9,7 @@ export class User {
         public password: string,
         public role: UserRole,
         public details: UserDetails | null = null,
+        public specialties: Specialty[] = [],
         public deletedAt: Date | null = null,
     ) { }
 }
