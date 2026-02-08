@@ -10,7 +10,7 @@
             "name": "Auth",
             "item": [
                 {
-                    "name": "Login",
+                    "name": "Login ADMIN",
                     "event": [
                         {
                             "listen": "test",
@@ -19,7 +19,7 @@
                                     "const response = pm.response.json();",
                                     "if (response.access_token) {",
                                     "    pm.collectionVariables.set(\"token\", response.access_token);",
-                                    "    console.log(\"Token guardado en variables de colección\");",
+                                    "    console.log(\"Token ADMIN guardado\");",
                                     "}"
                                 ],
                                 "type": "text/javascript"
@@ -32,6 +32,48 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"email\": \"admin@fluxmedical.com\",\n    \"password\": \"Admin123!\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login MEDICO",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const response = pm.response.json();",
+                                    "if (response.access_token) {",
+                                    "    pm.collectionVariables.set(\"token\", response.access_token);",
+                                    "    console.log(\"Token MEDICO guardado\");",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"medico1@fluxmedical.com\",\n    \"password\": \"Medico123!\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -151,6 +193,40 @@
                             ],
                             "path": [
                                 "users"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Usuario (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/users/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
                             ]
                         }
                     },
