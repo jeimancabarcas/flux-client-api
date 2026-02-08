@@ -2,9 +2,17 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Global Exception Filter
+  app.useGlobalFilters(new GlobalExceptionFilter());
+
+  // Global Response Interceptor
+  app.useGlobalInterceptors(new TransformResponseInterceptor());
 
   // Global Validation Pipe
   app.useGlobalPipes(new ValidationPipe({
