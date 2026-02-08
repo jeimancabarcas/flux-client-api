@@ -14,7 +14,7 @@ export class AuthService {
 
     async validateUser(email: string, pass: string): Promise<any> {
         const user = await this.userRepository.findByEmail(email);
-        if (user && await bcrypt.compare(pass, user.password)) {
+        if (user && (await bcrypt.compare(pass, user.password))) {
             const { password, ...result } = user;
             return result;
         }
@@ -34,14 +34,16 @@ export class AuthService {
                 id: user.id,
                 email: user.email,
                 role: user.role,
-                detalles: user.details ? {
-                    cedula: user.details.cedula,
-                    nombre: user.details.nombre,
-                    apellido: user.details.apellido,
-                    direccionPrincipal: user.details.direccionPrincipal,
-                    direccionSecundaria: user.details.direccionSecundaria,
-                    telefono: user.details.telefono
-                } : null
+                detalles: user.details
+                    ? {
+                        cedula: user.details.cedula,
+                        nombre: user.details.nombre,
+                        apellido: user.details.apellido,
+                        direccionPrincipal: user.details.direccionPrincipal,
+                        direccionSecundaria: user.details.direccionSecundaria,
+                        telefono: user.details.telefono,
+                    }
+                    : null,
             },
         };
     }

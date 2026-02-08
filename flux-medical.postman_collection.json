@@ -233,6 +233,116 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Patients",
+            "item": [
+                {
+                    "name": "Registrar Paciente",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombres\": \"Carlos Raúl\",\n    \"apellidos\": \"Sánchez Ortíz\",\n    \"tipoIdentificacion\": \"CC\",\n    \"numeroIdentificacion\": \"1098765432\",\n    \"fechaNacimiento\": \"1985-08-20\",\n    \"genero\": \"Masculino\",\n    \"email\": \"carlos@email.com\",\n    \"telefono\": \"3104567890\",\n    \"direccion\": \"Calle 45 #12-34\",\n    \"habeasDataConsent\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/patients",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "patients"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Buscar Paciente",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/patients/search?query=Carlos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "patients",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "query",
+                                    "value": "Carlos"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Resumen Paciente",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/patients/:id/summary",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":id",
+                                "summary"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "variable": [
