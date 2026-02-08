@@ -1,9 +1,8 @@
 import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { IUSER_REPOSITORY } from '../../users/domain/repositories/user.repository.interface';
-import type { IUserRepository } from '../../users/domain/repositories/user.repository.interface';
-import type { LoginDto } from '../infrastructure/dtos/login.dto';
+import { IUSER_REPOSITORY, type IUserRepository } from '../../users/domain/repositories/user.repository.interface';
+import { LoginDto } from '../infrastructure/dtos/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,13 +27,21 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
         const payload = { email: user.email, sub: user.id, role: user.role };
+
         return {
             access_token: this.jwtService.sign(payload),
             user: {
                 id: user.id,
-                nombre: user.nombre,
                 email: user.email,
                 role: user.role,
+                detalles: user.details ? {
+                    cedula: user.details.cedula,
+                    nombre: user.details.nombre,
+                    apellido: user.details.apellido,
+                    direccionPrincipal: user.details.direccionPrincipal,
+                    direccionSecundaria: user.details.direccionSecundaria,
+                    telefono: user.details.telefono
+                } : null
             },
         };
     }

@@ -1,13 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { UserRole } from '../../../../../../common/enums/user-role.enum';
+import { UserDetailsTypeOrmEntity } from './user-details.typeorm-entity';
 
 @Entity({ name: 'users', schema: 'fluxmedical' })
 export class UserTypeOrmEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-
-    @Column()
-    nombre: string;
 
     @Column({ unique: true })
     email: string;
@@ -21,4 +19,8 @@ export class UserTypeOrmEntity {
         default: UserRole.RECEPCIONISTA,
     })
     role: UserRole;
+
+    @OneToOne(() => UserDetailsTypeOrmEntity, { cascade: true, eager: true })
+    @JoinColumn()
+    details: UserDetailsTypeOrmEntity;
 }

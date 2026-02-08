@@ -1,22 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
-import { UserRole } from '../../../../common/enums/user-role.enum';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
-export class CreateUserDto {
-    @ApiProperty({ example: 'juan.perez@fluxmedical.com', description: 'Correo electrónico único' })
-    @IsEmail()
-    email: string;
-
-    @ApiProperty({ example: 'Admin123!', minLength: 6, description: 'Contraseña del usuario' })
-    @IsString()
-    @MinLength(6)
-    password: string;
-
-    @ApiProperty({ enum: UserRole, example: UserRole.MEDICO, description: 'Rol asignado al usuario' })
-    @IsEnum(UserRole)
-    role: UserRole;
-
-    // Personal Info Fields (Optional)
+export class UpdateProfileDto {
     @ApiPropertyOptional({ example: '12345678', description: 'Cédula de identidad' })
     @IsString()
     @IsOptional()

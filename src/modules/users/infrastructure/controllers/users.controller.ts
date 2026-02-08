@@ -1,17 +1,23 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Patch } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
+import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.use-case';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { UpdateProfileDto } from '../dtos/update-profile.dto';
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
+import { GetUser } from '../../../../common/decorators/get-user.decorator';
 import { UserRole } from '../../../../common/enums/user-role.enum';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-    constructor(private readonly createUserUseCase: CreateUserUseCase) { }
+    constructor(
+        private readonly createUserUseCase: CreateUserUseCase,
+        private readonly updateProfileUseCase: UpdateProfileUseCase,
+    ) { }
 
     @Post()
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -22,6 +28,18 @@ export class UsersController {
     @ApiResponse({ status: 409, description: 'El email ya existe.' })
     async create(@Body() createUserDto: CreateUserDto) {
         return this.createUserUseCase.execute(createUserDto);
+    }
+
+    @Patch('profile')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Completar o actualizar el perfil del usuario autenticado' })
+    @ApiResponse({ status: 200, description: 'Perfil actualizado exitosamente.' })
+    @ApiResponse({ status: 401, description: 'No autorizado.' })
+    async updateProfile(
+        @GetUser('id') userId: string,
+        @Body() updateProfileDto: UpdateProfileDto,
+    ) {
+        return this.updateProfileUseCase.execute(userId, updateProfileDto);
     }
 
     @Get()
