@@ -17,11 +17,15 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
     async save(appointment: Appointment): Promise<Appointment> {
         const entity = AppointmentMapper.toPersistence(appointment);
         const saved = await this.repository.save(entity);
-        return AppointmentMapper.toDomain(saved);
+        // Recargar con relaciones para devolver la información completa si es necesario
+        return this.findById(saved.id) as Promise<Appointment>;
     }
 
     async findById(id: string): Promise<Appointment | null> {
-        const entity = await this.repository.findOne({ where: { id } });
+        const entity = await this.repository.findOne({
+            where: { id },
+            relations: ['patient', 'doctor']
+        });
         return entity ? AppointmentMapper.toDomain(entity) : null;
     }
 
@@ -31,6 +35,8 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
         end: Date,
     ): Promise<Appointment[]> {
         const entities = await this.repository.createQueryBuilder('appointment')
+            .leftJoinAndSelect('appointment.patient', 'patient')
+            .leftJoinAndSelect('appointment.doctor', 'doctor')
             .where('appointment.doctorId = :doctorId', { doctorId })
             .andWhere('appointment.status NOT IN (:...excludedStatuses)', {
                 excludedStatuses: [AppointmentStatus.CANCELADA]

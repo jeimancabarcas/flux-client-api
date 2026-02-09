@@ -5,7 +5,7 @@ import { Appointment } from '../../domain/entities/appointment.entity';
 import { UserRole } from '../../../../common/enums/user-role.enum';
 
 @Injectable()
-export class StartAppointmentUseCase {
+export class ConfirmAppointmentUseCase {
     constructor(
         @Inject(IAPPOINTMENT_REPOSITORY)
         private readonly appointmentRepository: IAppointmentRepository,
@@ -13,7 +13,7 @@ export class StartAppointmentUseCase {
 
     async execute(
         appointmentId: string,
-        user: { id: string; role: string },
+        userRole: string,
     ): Promise<void> {
         const appointment = await this.appointmentRepository.findById(appointmentId);
 
@@ -21,17 +21,13 @@ export class StartAppointmentUseCase {
             throw new NotFoundException('Cita no encontrada');
         }
 
-        // Solo el médico asignado o un Admin pueden iniciar la cita
-        if (user.role === UserRole.MEDICO && appointment.doctorId !== user.id) {
-            throw new ForbiddenException('No puedes iniciar las citas de otro médico.');
+        // Solo Admin y Recepcionista pueden confirmar citas
+        if (userRole !== UserRole.ADMIN && userRole !== UserRole.RECEPCIONISTA) {
+            throw new ForbiddenException('Solo el administrador o un recepcionista pueden confirmar la cita.');
         }
 
-        if (user.role !== UserRole.MEDICO && user.role !== UserRole.ADMIN) {
-            throw new ForbiddenException('Solo el médico o un administrador pueden iniciar la cita.');
-        }
-
-        if (appointment.status !== AppointmentStatus.PENDIENTE && appointment.status !== AppointmentStatus.CONFIRMADA) {
-            throw new ForbiddenException('Solo se pueden iniciar citas en estado PENDIENTE o CONFIRMADA.');
+        if (appointment.status !== AppointmentStatus.PENDIENTE) {
+            throw new ForbiddenException('Solo se pueden confirmar citas en estado PENDIENTE.');
         }
 
         const updatedAppointment = new Appointment(
@@ -40,10 +36,10 @@ export class StartAppointmentUseCase {
             appointment.doctorId,
             appointment.startTime,
             appointment.endTime,
-            AppointmentStatus.EN_CONSULTA,
+            AppointmentStatus.CONFIRMADA,
             appointment.reason,
             appointment.notes,
-            new Date(), // Captura inicio real
+            appointment.actualStartTime,
             appointment.actualEndTime,
             appointment.createdAt,
             new Date(),

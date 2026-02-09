@@ -5,6 +5,7 @@ import { UpdateProfileUseCase } from './application/use-cases/update-profile.use
 import { ListUsersUseCase } from './application/use-cases/list-users.use-case';
 import { ListDoctorsUseCase } from './application/use-cases/list-doctors.use-case';
 import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case';
+import { AdminUpdateUserUseCase } from './application/use-cases/admin-update-user.use-case';
 import { CreateSpecialtyUseCase } from './application/use-cases/create-specialty.use-case';
 import { ListSpecialtiesUseCase } from './application/use-cases/list-specialties.use-case';
 import { AssignSpecialtiesToDoctorUseCase } from './application/use-cases/assign-specialties-to-doctor.use-case';
@@ -33,6 +34,7 @@ import { SpecialtiesController } from './infrastructure/controllers/specialties.
         ListUsersUseCase,
         ListDoctorsUseCase,
         DeleteUserUseCase,
+        AdminUpdateUserUseCase,
         CreateSpecialtyUseCase,
         ListSpecialtiesUseCase,
         AssignSpecialtiesToDoctorUseCase,

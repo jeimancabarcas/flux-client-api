@@ -1,5 +1,7 @@
 import { Appointment } from '../../../../domain/entities/appointment.entity';
 import { AppointmentTypeOrmEntity } from '../entities/appointment.typeorm-entity';
+import { PatientMapper } from '../../../../../patients/infrastructure/persistence/typeorm/mappers/patient.mapper';
+import { UserMapper } from '../../../../../users/infrastructure/persistence/typeorm/mappers/user.mapper';
 
 export class AppointmentMapper {
     static toDomain(entity: AppointmentTypeOrmEntity): Appointment {
@@ -16,6 +18,8 @@ export class AppointmentMapper {
             entity.actualEndTime,
             entity.createdAt,
             entity.updatedAt,
+            entity.patient ? PatientMapper.toDomain(entity.patient) : null,
+            entity.doctor ? UserMapper.toDomain(entity.doctor) : null,
         );
     }
 
@@ -32,5 +36,12 @@ export class AppointmentMapper {
         entity.actualStartTime = domain.actualStartTime;
         entity.actualEndTime = domain.actualEndTime;
         return entity;
+    }
+
+    static toResponse(appointment: Appointment) {
+        return {
+            ...appointment,
+            doctor: appointment.doctor ? UserMapper.toResponse(appointment.doctor) : null,
+        };
     }
 }

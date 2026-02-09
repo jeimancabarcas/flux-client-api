@@ -1,6 +1,7 @@
 import { Inject, Injectable, ConflictException, ForbiddenException } from '@nestjs/common';
 import { IAPPOINTMENT_REPOSITORY, type IAppointmentRepository } from '../../domain/repositories/appointment.repository.interface';
 import { Appointment } from '../../domain/entities/appointment.entity';
+import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
 
 @Injectable()
 export class ScheduleAppointmentUseCase {
@@ -15,14 +16,12 @@ export class ScheduleAppointmentUseCase {
         startTime: Date;
         durationMinutes?: number;
         reason?: string;
+        status?: AppointmentStatus;
     }): Promise<Appointment> {
         // 1. Duración Inteligente
         let duration = data.durationMinutes;
 
         if (!duration) {
-            // Prioridad: 1. Manual, 2. Configuración (Simulada para este caso), 3. Defecto 20m
-            // Aquí podrías inyectar un ConfigService o Repo de Médicos para buscar el valor real.
-            // Por simplicidad en este paso, asumiremos que si no viene manual, buscamos en una "configuración" que por ahora retorna null.
             const doctorConfigDuration = await this.getDoctorConfigDuration(data.doctorId);
             duration = doctorConfigDuration || 20;
         }
@@ -43,25 +42,16 @@ export class ScheduleAppointmentUseCase {
             );
         }
 
-        // 3. Crear y Guardar
-        const appointment = new Appointment(
+        // 3. Crear y Guardar con estado personalizado
+        const newAppointment = new Appointment(
             null,
             data.patientId,
             data.doctorId,
             startTime,
             endTime,
-            data.reason ? (data.reason as any) : null, // Fix: use create logic or direct constructor
-            null as any,
+            data.status || AppointmentStatus.PENDIENTE, // Usar el estado proporcionado o PENDIENTE por defecto
+            data.reason || null,
             null,
-        );
-
-        // Re-uso de lógica de creación controlada
-        const newAppointment = Appointment.create(
-            data.patientId,
-            data.doctorId,
-            startTime,
-            duration,
-            data.reason
         );
 
         return this.appointmentRepository.save(newAppointment);

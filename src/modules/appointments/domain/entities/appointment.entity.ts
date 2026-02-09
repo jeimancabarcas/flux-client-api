@@ -14,6 +14,8 @@ export class Appointment {
         public readonly actualEndTime: Date | null = null,
         public readonly createdAt: Date | null = null,
         public readonly updatedAt: Date | null = null,
+        public readonly patient: any | null = null,
+        public readonly doctor: any | null = null,
     ) { }
 
     static create(

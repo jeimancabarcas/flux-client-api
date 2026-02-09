@@ -1,15 +1,19 @@
-import { Inject, Injectable, ConflictException } from '@nestjs/common';
+import { Inject, Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../domain/entities/user.entity';
 import { UserDetails } from '../../domain/entities/user-details.entity';
 import { IUSER_REPOSITORY, type IUserRepository } from '../../domain/repositories/user.repository.interface';
+import { ISPECIALTY_REPOSITORY, type ISpecialtyRepository } from '../../domain/repositories/specialty.repository.interface';
 import { CreateUserDto } from '../../infrastructure/dtos/create-user.dto';
+import { UserRole } from '../../../../common/enums/user-role.enum';
 
 @Injectable()
 export class CreateUserUseCase {
     constructor(
         @Inject(IUSER_REPOSITORY)
         private readonly userRepository: IUserRepository,
+        @Inject(ISPECIALTY_REPOSITORY)
+        private readonly specialtyRepository: ISpecialtyRepository,
     ) { }
 
     async execute(dto: CreateUserDto): Promise<User> {
@@ -45,12 +49,26 @@ export class CreateUserUseCase {
             );
         }
 
+        // Fetch specialties if provided
+        let specialties: any[] = [];
+        if (dto.specialtyIds && dto.specialtyIds.length > 0) {
+            if (dto.role !== UserRole.MEDICO) {
+                throw new ConflictException('Solo se pueden asignar especialidades a usuarios con rol MEDICO');
+            }
+
+            specialties = await this.specialtyRepository.findManyByIds(dto.specialtyIds);
+            if (specialties.length !== dto.specialtyIds.length) {
+                throw new NotFoundException('Una o más especialidades no existen');
+            }
+        }
+
         const user = new User(
             null,
             dto.email,
             hashedPassword,
             dto.role,
             details,
+            specialties,
         );
 
         return this.userRepository.create(user);

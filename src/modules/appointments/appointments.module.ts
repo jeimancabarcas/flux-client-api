@@ -6,6 +6,7 @@ import { ScheduleAppointmentUseCase } from './application/use-cases/schedule-app
 import { StartAppointmentUseCase } from './application/use-cases/start-appointment.use-case';
 import { CompleteAppointmentUseCase } from './application/use-cases/complete-appointment.use-case';
 import { CancelAppointmentUseCase } from './application/use-cases/cancel-appointment.use-case';
+import { ConfirmAppointmentUseCase } from './application/use-cases/confirm-appointment.use-case';
 import { ListAppointmentsUseCase } from './application/use-cases/list-appointments.use-case';
 import { IAPPOINTMENT_REPOSITORY } from './domain/repositories/appointment.repository.interface';
 import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-appointment.repository';
@@ -18,6 +19,7 @@ import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeo
         StartAppointmentUseCase,
         CompleteAppointmentUseCase,
         CancelAppointmentUseCase,
+        ConfirmAppointmentUseCase,
         ListAppointmentsUseCase,
         {
             provide: IAPPOINTMENT_REPOSITORY,

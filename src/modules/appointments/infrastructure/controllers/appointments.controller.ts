@@ -4,6 +4,7 @@ import { ScheduleAppointmentUseCase } from '../../application/use-cases/schedule
 import { StartAppointmentUseCase } from '../../application/use-cases/start-appointment.use-case';
 import { CompleteAppointmentUseCase } from '../../application/use-cases/complete-appointment.use-case';
 import { CancelAppointmentUseCase } from '../../application/use-cases/cancel-appointment.use-case';
+import { ConfirmAppointmentUseCase } from '../../application/use-cases/confirm-appointment.use-case';
 import { ListAppointmentsUseCase } from '../../application/use-cases/list-appointments.use-case';
 import { CreateAppointmentDto } from '../dtos/create-appointment.dto';
 import { CompleteAppointmentDto } from '../dtos/complete-appointment.dto';
@@ -13,6 +14,7 @@ import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
 import { UserRole } from '../../../../common/enums/user-role.enum';
 import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
+import { AppointmentMapper } from '../persistence/typeorm/mappers/appointment.mapper';
 
 @ApiTags('Appointments')
 @ApiBearerAuth()
@@ -24,6 +26,7 @@ export class AppointmentsController {
         private readonly startAppointmentUseCase: StartAppointmentUseCase,
         private readonly completeAppointmentUseCase: CompleteAppointmentUseCase,
         private readonly cancelAppointmentUseCase: CancelAppointmentUseCase,
+        private readonly confirmAppointmentUseCase: ConfirmAppointmentUseCase,
         private readonly listAppointmentsUseCase: ListAppointmentsUseCase,
     ) { }
 
@@ -31,10 +34,11 @@ export class AppointmentsController {
     @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
     @ApiOperation({ summary: 'Agendar una nueva cita' })
     async create(@Body() dto: CreateAppointmentDto) {
-        return this.scheduleAppointmentUseCase.execute({
+        const appointment = await this.scheduleAppointmentUseCase.execute({
             ...dto,
             startTime: new Date(dto.startTime),
         });
+        return AppointmentMapper.toResponse(appointment);
     }
 
     @Get()
@@ -48,13 +52,14 @@ export class AppointmentsController {
         @Query('start') start?: string,
         @Query('end') end?: string,
     ) {
-        return this.listAppointmentsUseCase.execute(req.user, {
+        const appointments = await this.listAppointmentsUseCase.execute(req.user, {
             patientId,
             doctorId,
             status,
             start: start ? new Date(start) : undefined,
             end: end ? new Date(end) : undefined,
         });
+        return appointments.map(AppointmentMapper.toResponse);
     }
 
     @Patch(':id/start')
@@ -62,6 +67,13 @@ export class AppointmentsController {
     @ApiOperation({ summary: 'Iniciar consulta (Médico)' })
     async start(@Param('id') id: string, @Request() req: any) {
         return this.startAppointmentUseCase.execute(id, req.user);
+    }
+
+    @Patch(':id/confirm')
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
+    @ApiOperation({ summary: 'Confirmar llegada/asistencia (Admin/Rec)' })
+    async confirm(@Param('id') id: string, @Request() req: any) {
+        return this.confirmAppointmentUseCase.execute(id, req.user.role);
     }
 
     @Patch(':id/complete')

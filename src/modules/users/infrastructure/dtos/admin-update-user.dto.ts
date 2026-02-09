@@ -1,22 +1,24 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength, IsArray, IsUUID } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
 import { UserRole } from '../../../../common/enums/user-role.enum';
 
-export class CreateUserDto {
-    @ApiProperty({ example: 'juan.perez@fluxmedical.com', description: 'Correo electrónico único' })
+export class AdminUpdateUserDto {
+    @ApiPropertyOptional({ example: 'juan.perez@fluxmedical.com', description: 'Correo electrónico único' })
     @IsEmail()
-    email: string;
+    @IsOptional()
+    email?: string;
 
-    @ApiProperty({ example: 'Admin123!', minLength: 6, description: 'Contraseña del usuario' })
+    @ApiPropertyOptional({ example: 'Admin123!', minLength: 6, description: 'Contraseña del usuario' })
     @IsString()
+    @IsOptional()
     @MinLength(6)
-    password: string;
+    password?: string;
 
-    @ApiProperty({ enum: UserRole, example: UserRole.MEDICO, description: 'Rol asignado al usuario' })
+    @ApiPropertyOptional({ enum: UserRole, example: UserRole.MEDICO, description: 'Rol asignado al usuario' })
     @IsEnum(UserRole)
-    role: UserRole;
+    @IsOptional()
+    role?: UserRole;
 
-    // Personal Info Fields (Optional)
     @ApiPropertyOptional({ example: '12345678', description: 'Cédula de identidad' })
     @IsString()
     @IsOptional()
@@ -48,8 +50,6 @@ export class CreateUserDto {
     telefono?: string;
 
     @ApiPropertyOptional({ example: ['uuid-1', 'uuid-2'], description: 'Lista de IDs de especialidades' })
-    @IsArray()
-    @IsUUID('all', { each: true })
     @IsOptional()
     specialtyIds?: string[];
 }

@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "flux-medical-api-tests",
         "name": "Flux Medical API",
-        "description": "Colección para pruebas del Backend de Flux Medical con Arquitectura Hexagonal",
+        "description": "Colección completa para el Backend de Flux Medical\n\nFuncionalidades incluidas:\n- Autenticación JWT con roles (Admin, Médico, Recepcionista)\n- Gestión de usuarios y especialidades médicas\n- Gestión de pacientes con consentimiento de datos\n- Sistema de citas con estados: PENDIENTE, CONFIRMADA, EN_CONSULTA, COMPLETADA, CANCELADA\n- Respuestas estandarizadas con formato ApiResponse\n\nVersión: 2.0",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -17,8 +17,9 @@
                             "script": {
                                 "exec": [
                                     "const response = pm.response.json();",
-                                    "if (response.access_token) {",
-                                    "    pm.collectionVariables.set(\"token\", response.access_token);",
+                                    "const token = response.data ? response.data.access_token : response.access_token;",
+                                    "if (token) {",
+                                    "    pm.collectionVariables.set(\"token\", token);",
                                     "    console.log(\"Token ADMIN guardado\");",
                                     "}"
                                 ],
@@ -59,8 +60,9 @@
                             "script": {
                                 "exec": [
                                     "const response = pm.response.json();",
-                                    "if (response.access_token) {",
-                                    "    pm.collectionVariables.set(\"token\", response.access_token);",
+                                    "const token = response.data ? response.data.access_token : response.access_token;",
+                                    "if (token) {",
+                                    "    pm.collectionVariables.set(\"token\", token);",
                                     "    console.log(\"Token MEDICO guardado\");",
                                     "}"
                                 ],
@@ -101,8 +103,9 @@
                             "script": {
                                 "exec": [
                                     "const response = pm.response.json();",
-                                    "if (response.access_token) {",
-                                    "    pm.collectionVariables.set(\"token\", response.access_token);",
+                                    "const token = response.data ? response.data.access_token : response.access_token;",
+                                    "if (token) {",
+                                    "    pm.collectionVariables.set(\"token\", token);",
                                     "    console.log(\"Token RECEPCIONISTA guardado\");",
                                     "}"
                                 ],
@@ -157,7 +160,7 @@
                         "header": [],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"email\": \"medico1@fluxmedical.com\",\n    \"password\": \"Medico123!\",\n    \"role\": \"MEDICO\"\n}",
+                            "raw": "{\n    \"email\": \"dr.garcia@fluxmedical.com\",\n    \"password\": \"Medico123!\",\n    \"role\": \"MEDICO\",\n    \"cedula\": \"1234567890\",\n    \"nombre\": \"Carlos\",\n    \"apellido\": \"García\",\n    \"telefono\": \"3001234567\",\n    \"direccionPrincipal\": \"Calle 123 #45-67\",\n    \"specialtyIds\": [\"uuid-especialidad-cardiologia\"]\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -263,6 +266,49 @@
                             "path": [
                                 "users",
                                 "doctors"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Editar Usuario (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"nuevo.email@fluxmedical.com\",\n    \"role\": \"MEDICO\",\n    \"nombre\": \"Nombre Editado\",\n    \"apellido\": \"Apellido Editado\",\n    \"specialtyIds\": [\"uuid-1\", \"uuid-2\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/users/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
                             ]
                         }
                     },
@@ -587,7 +633,7 @@
                         "header": [],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"patientId\": \"uuid-paciente\",\n    \"doctorId\": \"uuid-medico\",\n    \"startTime\": \"2026-02-15T10:00:00Z\",\n    \"durationMinutes\": 30,\n    \"reason\": \"Consulta General\"\n}",
+                            "raw": "{\n    \"patientId\": \"uuid-paciente\",\n    \"doctorId\": \"uuid-medico\",\n    \"startTime\": \"2026-02-15T10:00:00Z\",\n    \"durationMinutes\": 30,\n    \"reason\": \"Control mensual - Seguimiento de tratamiento\",\n    \"status\": \"PENDIENTE\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -637,6 +683,41 @@
                                 {
                                     "key": "end",
                                     "value": "2026-03-01"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Confirmar Cita (Llegada)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/:id/confirm",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                ":id",
+                                "confirm"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
                                 }
                             ]
                         }

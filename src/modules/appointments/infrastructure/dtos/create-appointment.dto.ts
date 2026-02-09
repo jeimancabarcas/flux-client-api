@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsOptional, IsInt, IsString, IsUUID } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsOptional, IsInt, IsString, IsUUID, IsEnum } from 'class-validator';
+import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
 
 export class CreateAppointmentDto {
     @ApiProperty({ example: 'uuid-del-paciente' })
@@ -26,4 +27,13 @@ export class CreateAppointmentDto {
     @IsString()
     @IsOptional()
     reason?: string;
+
+    @ApiPropertyOptional({
+        enum: AppointmentStatus,
+        example: AppointmentStatus.PENDIENTE,
+        description: 'Estado inicial de la cita (opcional, por defecto PENDIENTE)'
+    })
+    @IsEnum(AppointmentStatus)
+    @IsOptional()
+    status?: AppointmentStatus;
 }

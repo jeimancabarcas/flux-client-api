@@ -24,6 +24,11 @@ export class TypeOrmPatientRepository implements IPatientRepository {
         return entity ? PatientMapper.toDomain(entity) : null;
     }
 
+    async findByNumeroIdentificacion(numeroIdentificacion: string): Promise<Patient | null> {
+        const entity = await this.repository.findOne({ where: { numeroIdentificacion } });
+        return entity ? PatientMapper.toDomain(entity) : null;
+    }
+
     async findById(id: string): Promise<Patient | null> {
         const entity = await this.repository.findOne({ where: { id } });
         return entity ? PatientMapper.toDomain(entity) : null;

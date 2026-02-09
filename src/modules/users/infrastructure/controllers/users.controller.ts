@@ -5,8 +5,10 @@ import { UpdateProfileUseCase } from '../../application/use-cases/update-profile
 import { ListUsersUseCase } from '../../application/use-cases/list-users.use-case';
 import { ListDoctorsUseCase } from '../../application/use-cases/list-doctors.use-case';
 import { DeleteUserUseCase } from '../../application/use-cases/delete-user.use-case';
+import { AdminUpdateUserUseCase } from '../../application/use-cases/admin-update-user.use-case';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateProfileDto } from '../dtos/update-profile.dto';
+import { AdminUpdateUserDto } from '../dtos/admin-update-user.dto';
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
@@ -24,6 +26,7 @@ export class UsersController {
         private readonly listUsersUseCase: ListUsersUseCase,
         private readonly listDoctorsUseCase: ListDoctorsUseCase,
         private readonly deleteUserUseCase: DeleteUserUseCase,
+        private readonly adminUpdateUserUseCase: AdminUpdateUserUseCase,
     ) { }
 
     @Post()
@@ -49,6 +52,20 @@ export class UsersController {
         @Body() updateProfileDto: UpdateProfileDto,
     ) {
         const user = await this.updateProfileUseCase.execute(userId, updateProfileDto, role);
+        return UserMapper.toResponse(user);
+    }
+
+    @Patch(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({ summary: 'Actualizar cualquier usuario (Solo ADMIN)' })
+    @ApiResponse({ status: 200, description: 'Usuario actualizado exitosamente.' })
+    @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+    async adminUpdate(
+        @Param('id') id: string,
+        @Body() adminUpdateUserDto: AdminUpdateUserDto,
+    ) {
+        const user = await this.adminUpdateUserUseCase.execute(id, adminUpdateUserDto);
         return UserMapper.toResponse(user);
     }
 
