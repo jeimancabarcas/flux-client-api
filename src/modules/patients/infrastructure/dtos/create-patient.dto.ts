@@ -51,4 +51,14 @@ export class CreatePatientDto {
     @IsBoolean()
     @IsNotEmpty()
     habeasDataConsent: boolean;
+
+    @ApiProperty({ example: 'Sura', required: false })
+    @IsString()
+    @IsOptional()
+    eps?: string;
+
+    @ApiProperty({ example: 'Colmédica', required: false })
+    @IsString()
+    @IsOptional()
+    prepagada?: string;
 }

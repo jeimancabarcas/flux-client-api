@@ -24,7 +24,7 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
     async findById(id: string): Promise<Appointment | null> {
         const entity = await this.repository.findOne({
             where: { id },
-            relations: ['patient', 'doctor']
+            relations: ['patient', 'doctor', 'doctor.specialties']
         });
         return entity ? AppointmentMapper.toDomain(entity) : null;
     }
@@ -58,7 +58,8 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
     }): Promise<Appointment[]> {
         const qb = this.repository.createQueryBuilder('appointment')
             .leftJoinAndSelect('appointment.patient', 'patient')
-            .leftJoinAndSelect('appointment.doctor', 'doctor');
+            .leftJoinAndSelect('appointment.doctor', 'doctor')
+            .leftJoinAndSelect('doctor.specialties', 'specialties');
 
         if (filters?.doctorId) qb.andWhere('appointment.doctorId = :doctorId', { doctorId: filters.doctorId });
         if (filters?.patientId) qb.andWhere('appointment.patientId = :patientId', { patientId: filters.patientId });

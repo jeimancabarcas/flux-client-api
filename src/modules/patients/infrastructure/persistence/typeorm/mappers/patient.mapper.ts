@@ -15,6 +15,8 @@ export class PatientMapper {
             entity.telefono,
             entity.direccion,
             entity.habeasDataConsent,
+            entity.eps,
+            entity.prepagada,
             entity.createdAt,
             entity.updatedAt,
         );
@@ -33,6 +35,8 @@ export class PatientMapper {
         entity.telefono = domain.telefono;
         entity.direccion = domain.direccion ?? null;
         entity.habeasDataConsent = domain.habeasDataConsent;
+        entity.eps = domain.eps ?? null;
+        entity.prepagada = domain.prepagada ?? null;
         return entity;
     }
 }

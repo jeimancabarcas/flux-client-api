@@ -28,6 +28,8 @@ export class RegisterPatientUseCase {
             dto.telefono,
             dto.direccion ?? null,
             dto.habeasDataConsent,
+            dto.eps ?? null,
+            dto.prepagada ?? null,
         );
 
         return this.patientRepository.save(patient);

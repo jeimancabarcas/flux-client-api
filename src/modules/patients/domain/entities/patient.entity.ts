@@ -11,6 +11,8 @@ export class Patient {
         public telefono: string,
         public direccion: string | null,
         public habeasDataConsent: boolean,
+        public eps: string | null = null,
+        public prepagada: string | null = null,
         public readonly createdAt?: Date,
         public readonly updatedAt?: Date,
     ) { }

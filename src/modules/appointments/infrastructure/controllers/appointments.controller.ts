@@ -11,6 +11,7 @@ import { GetAppointmentUseCase } from '../../application/use-cases/get-appointme
 import { GetActiveConsultationUseCase } from '../../application/use-cases/get-active-consultation.use-case';
 import { RescheduleAppointmentUseCase } from '../../application/use-cases/reschedule-appointment.use-case';
 import { DeleteAppointmentUseCase } from '../../application/use-cases/delete-appointment.use-case';
+import { ListPatientAppointmentsUseCase } from '../../application/use-cases/list-patient-appointments.use-case';
 import { CreateAppointmentDto } from '../dtos/create-appointment.dto';
 import { CompleteAppointmentDto } from '../dtos/complete-appointment.dto';
 import { CancelAppointmentDto } from '../dtos/cancel-appointment.dto';
@@ -39,6 +40,7 @@ export class AppointmentsController {
         private readonly getActiveConsultationUseCase: GetActiveConsultationUseCase,
         private readonly rescheduleAppointmentUseCase: RescheduleAppointmentUseCase,
         private readonly deleteAppointmentUseCase: DeleteAppointmentUseCase,
+        private readonly listPatientAppointmentsUseCase: ListPatientAppointmentsUseCase,
     ) { }
 
     @Post()
@@ -88,6 +90,25 @@ export class AppointmentsController {
     async getActiveConsultation(@Request() req: any) {
         const appointment = await this.getActiveConsultationUseCase.execute(req.user.id);
         return appointment ? AppointmentMapper.toResponse(appointment) : null;
+    }
+
+    @Get('patient/:id')
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA, UserRole.MEDICO)
+    @ApiOperation({ summary: 'Listar historial de citas de un paciente' })
+    async getByPatient(
+        @Param('id') id: string,
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+    ) {
+        const result = await this.listPatientAppointmentsUseCase.execute(
+            id,
+            Number(page) || 1,
+            Number(limit) || 10,
+        );
+        return {
+            data: result.data.map(AppointmentMapper.toResponse),
+            total: result.total,
+        };
     }
 
     @Get(':id')

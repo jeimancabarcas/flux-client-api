@@ -35,6 +35,12 @@ export class PatientTypeOrmEntity {
     @Column({ name: 'habeas_data_consent', default: false })
     habeasDataConsent: boolean;
 
+    @Column({ type: 'varchar', nullable: true })
+    eps: string | null;
+
+    @Column({ type: 'varchar', nullable: true })
+    prepagada: string | null;
+
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 

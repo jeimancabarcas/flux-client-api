@@ -7,6 +7,7 @@ import { GetPatientSummaryUseCase } from './application/use-cases/get-patient-su
 import { SearchPatientUseCase } from './application/use-cases/search-patient.use-case';
 import { ListPatientsUseCase } from './application/use-cases/list-patients.use-case';
 import { UpdatePatientUseCase } from './application/use-cases/update-patient.use-case';
+import { GetPatientUseCase } from './application/use-cases/get-patient.use-case';
 import { IPATIENT_REPOSITORY } from './domain/repositories/patient.repository.interface';
 import { TypeOrmPatientRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-patient.repository';
 
@@ -19,6 +20,7 @@ import { TypeOrmPatientRepository } from './infrastructure/persistence/typeorm/r
         SearchPatientUseCase,
         ListPatientsUseCase,
         UpdatePatientUseCase,
+        GetPatientUseCase,
         {
             provide: IPATIENT_REPOSITORY,
             useClass: TypeOrmPatientRepository,

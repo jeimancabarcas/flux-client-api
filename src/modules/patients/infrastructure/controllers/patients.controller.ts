@@ -5,6 +5,7 @@ import { GetPatientSummaryUseCase } from '../../application/use-cases/get-patien
 import { SearchPatientUseCase } from '../../application/use-cases/search-patient.use-case';
 import { ListPatientsUseCase } from '../../application/use-cases/list-patients.use-case';
 import { UpdatePatientUseCase } from '../../application/use-cases/update-patient.use-case';
+import { GetPatientUseCase } from '../../application/use-cases/get-patient.use-case';
 import { CreatePatientDto } from '../dtos/create-patient.dto';
 import { UpdatePatientDto } from '../dtos/update-patient.dto';
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt-auth.guard';
@@ -23,6 +24,7 @@ export class PatientsController {
         private readonly searchPatientUseCase: SearchPatientUseCase,
         private readonly listPatientsUseCase: ListPatientsUseCase,
         private readonly updatePatientUseCase: UpdatePatientUseCase,
+        private readonly getPatientUseCase: GetPatientUseCase,
     ) { }
 
     @Post()
@@ -52,6 +54,15 @@ export class PatientsController {
     @ApiOperation({ summary: 'Buscar pacientes por nombre o identificación' })
     async search(@Query('query') query: string) {
         return this.searchPatientUseCase.execute(query);
+    }
+
+    @Get(':id')
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA, UserRole.MEDICO)
+    @ApiOperation({ summary: 'Obtener información de un paciente específico' })
+    @ApiResponse({ status: 200, description: 'Detalles del paciente.' })
+    @ApiResponse({ status: 404, description: 'Paciente no encontrado.' })
+    async findOne(@Param('id') id: string) {
+        return this.getPatientUseCase.execute(id);
     }
 
     @Get(':id/summary')

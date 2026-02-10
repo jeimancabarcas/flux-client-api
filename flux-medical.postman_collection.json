@@ -628,7 +628,7 @@
                         "header": [],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"nombres\": \"Carlos Raúl\",\n    \"apellidos\": \"Sánchez Ortíz\",\n    \"telefono\": \"3201234567\",\n    \"email\": \"carlos.nuevo@email.com\",\n    \"direccion\": \"Carrera 15 #30-45, Apto 301\"\n}",
+                            "raw": "{\n    \"nombres\": \"Carlos Raúl\",\n    \"apellidos\": \"Sánchez Ortíz\",\n    \"telefono\": \"3201234567\",\n    \"email\": \"carlos.nuevo@email.com\",\n    \"direccion\": \"Carrera 15 #30-45, Apto 301\",\n    \"eps\": \"Sanitas\",\n    \"prepagada\": \"Medisanitas\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -649,6 +649,40 @@
                                     "key": "id",
                                     "value": "",
                                     "description": "ID del paciente a actualizar"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Paciente por ID",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/patients/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
                                 }
                             ]
                         }
@@ -721,6 +755,52 @@
                             ]
                         },
                         "description": "Obtiene los detalles de la cita que el médico tiene actualmente en estado 'EN_CONSULTA'. Si no tiene ninguna, devuelve null."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Historial de Citas del Paciente",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/patient/:id?page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "patient",
+                                ":id"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Retorna una lista paginada de todas las citas asociadas a un ID de paciente, incluyendo detalles del médico y su especialidad."
                     },
                     "response": []
                 },

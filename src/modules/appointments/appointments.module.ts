@@ -13,6 +13,7 @@ import { GetAppointmentUseCase } from './application/use-cases/get-appointment.u
 import { GetActiveConsultationUseCase } from './application/use-cases/get-active-consultation.use-case';
 import { RescheduleAppointmentUseCase } from './application/use-cases/reschedule-appointment.use-case';
 import { DeleteAppointmentUseCase } from './application/use-cases/delete-appointment.use-case';
+import { ListPatientAppointmentsUseCase } from './application/use-cases/list-patient-appointments.use-case';
 import { IAPPOINTMENT_REPOSITORY } from './domain/repositories/appointment.repository.interface';
 import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-appointment.repository';
 
@@ -31,6 +32,7 @@ import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeo
         GetActiveConsultationUseCase,
         RescheduleAppointmentUseCase,
         DeleteAppointmentUseCase,
+        ListPatientAppointmentsUseCase,
         {
             provide: IAPPOINTMENT_REPOSITORY,
             useClass: TypeOrmAppointmentRepository,

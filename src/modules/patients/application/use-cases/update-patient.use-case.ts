@@ -40,6 +40,8 @@ export class UpdatePatientUseCase {
             dto.telefono ?? existingPatient.telefono,
             dto.direccion !== undefined ? dto.direccion : existingPatient.direccion,
             dto.habeasDataConsent ?? existingPatient.habeasDataConsent,
+            dto.eps !== undefined ? dto.eps : existingPatient.eps,
+            dto.prepagada !== undefined ? dto.prepagada : existingPatient.prepagada,
             existingPatient.createdAt,
             new Date(), // updatedAt
         );
