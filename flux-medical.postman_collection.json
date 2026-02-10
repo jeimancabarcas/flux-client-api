@@ -610,12 +610,210 @@
                         }
                     },
                     "response": []
+                },
+                {
+                    "name": "Actualizar Paciente",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombres\": \"Carlos Raúl\",\n    \"apellidos\": \"Sánchez Ortíz\",\n    \"telefono\": \"3201234567\",\n    \"email\": \"carlos.nuevo@email.com\",\n    \"direccion\": \"Carrera 15 #30-45, Apto 301\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/patients/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "patients",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "",
+                                    "description": "ID del paciente a actualizar"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
                 }
             ]
         },
         {
             "name": "Appointments",
             "item": [
+                {
+                    "name": "Ver Mis Siguientes Citas (Médico)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/next?date=2026-02-09T08:00:00Z",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "next"
+                            ],
+                            "query": [
+                                {
+                                    "key": "date",
+                                    "value": "2026-02-09T08:00:00Z",
+                                    "description": "Fecha de referencia"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Ver Mi Consulta en Curso",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/active-consultation",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "active-consultation"
+                            ]
+                        },
+                        "description": "Obtiene los detalles de la cita que el médico tiene actualmente en estado 'EN_CONSULTA'. Si no tiene ninguna, devuelve null."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Listar Citas (Calendario)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments?start=2026-02-08T05:00:00.000Z&end=2026-02-15T04:59:59.999Z",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "start",
+                                    "value": "2026-02-08T05:00:00.000Z"
+                                },
+                                {
+                                    "key": "end",
+                                    "value": "2026-02-15T04:59:59.999Z"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "PENDIENTE",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "doctorId",
+                                    "value": "",
+                                    "description": "Solo Admin/Rec pueden filtrar por otros médicos",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "patientId",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Obtiene las citas dentro de un rango de tiempo. \n- Si el usuario es MEDICO: Solo devuelve sus propias citas (el doctorId se ignora o se fuerza al suyo).\n- Si es ADMIN/RECEPCIONISTA: Devuelve todas las citas (puede filtrar opcionalmente por doctorId)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Detalles de Cita",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "",
+                                    "description": "ID de la cita"
+                                }
+                            ]
+                        },
+                        "description": "Obtiene los detalles completos de una cita, incluyendo la información del paciente. Útil para el módulo de atención clínica."
+                    },
+                    "response": []
+                },
                 {
                     "name": "Agendar Cita",
                     "request": {
@@ -647,43 +845,6 @@
                             ],
                             "path": [
                                 "appointments"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Ver Agenda",
-                    "request": {
-                        "auth": {
-                            "type": "bearer",
-                            "bearer": [
-                                {
-                                    "key": "token",
-                                    "value": "{{token}}",
-                                    "type": "string"
-                                }
-                            ]
-                        },
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/appointments?start=2026-02-01&end=2026-03-01",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "appointments"
-                            ],
-                            "query": [
-                                {
-                                    "key": "start",
-                                    "value": "2026-02-01"
-                                },
-                                {
-                                    "key": "end",
-                                    "value": "2026-03-01"
-                                }
                             ]
                         }
                     },
@@ -776,7 +937,7 @@
                         "header": [],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"notes\": \"Paciente estable, se receta reposo.\"\n}",
+                            "raw": "{\n    \"notes\": \"Paciente evoluciona favorablemente. Se ajusta dosis de medicamento.\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -820,7 +981,7 @@
                         "header": [],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"reason\": \"Paciente no asistió.\"\n}",
+                            "raw": "{\n    \"reason\": \"Paciente solicita reprogramación por motivos personales\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -836,6 +997,84 @@
                                 "appointments",
                                 ":id",
                                 "cancel"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reprogramar Cita (Admin/Rec)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"startTime\": \"2026-02-15T10:00:00Z\",\n    \"durationMinutes\": 45\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/appointments/:id/reschedule",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                ":id",
+                                "reschedule"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Cita Cancelada (Calendario)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                ":id"
                             ],
                             "variable": [
                                 {

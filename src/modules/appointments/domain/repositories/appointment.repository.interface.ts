@@ -16,6 +16,7 @@ export interface IAppointmentRepository {
         start?: Date;
         end?: Date;
     }): Promise<Appointment[]>;
+    delete(id: string): Promise<void>;
 }
 
 export const IAPPOINTMENT_REPOSITORY = Symbol('IAppointmentRepository');

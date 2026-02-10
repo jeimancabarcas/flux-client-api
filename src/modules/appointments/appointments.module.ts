@@ -8,6 +8,11 @@ import { CompleteAppointmentUseCase } from './application/use-cases/complete-app
 import { CancelAppointmentUseCase } from './application/use-cases/cancel-appointment.use-case';
 import { ConfirmAppointmentUseCase } from './application/use-cases/confirm-appointment.use-case';
 import { ListAppointmentsUseCase } from './application/use-cases/list-appointments.use-case';
+import { GetDoctorNextAppointmentsUseCase } from './application/use-cases/get-doctor-next-appointments.use-case';
+import { GetAppointmentUseCase } from './application/use-cases/get-appointment.use-case';
+import { GetActiveConsultationUseCase } from './application/use-cases/get-active-consultation.use-case';
+import { RescheduleAppointmentUseCase } from './application/use-cases/reschedule-appointment.use-case';
+import { DeleteAppointmentUseCase } from './application/use-cases/delete-appointment.use-case';
 import { IAPPOINTMENT_REPOSITORY } from './domain/repositories/appointment.repository.interface';
 import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-appointment.repository';
 
@@ -21,6 +26,11 @@ import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeo
         CancelAppointmentUseCase,
         ConfirmAppointmentUseCase,
         ListAppointmentsUseCase,
+        GetDoctorNextAppointmentsUseCase,
+        GetAppointmentUseCase,
+        GetActiveConsultationUseCase,
+        RescheduleAppointmentUseCase,
+        DeleteAppointmentUseCase,
         {
             provide: IAPPOINTMENT_REPOSITORY,
             useClass: TypeOrmAppointmentRepository,

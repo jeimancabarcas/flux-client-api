@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ScheduleAppointmentUseCase } from '../../application/use-cases/schedule-appointment.use-case';
 import { StartAppointmentUseCase } from '../../application/use-cases/start-appointment.use-case';
@@ -6,9 +6,15 @@ import { CompleteAppointmentUseCase } from '../../application/use-cases/complete
 import { CancelAppointmentUseCase } from '../../application/use-cases/cancel-appointment.use-case';
 import { ConfirmAppointmentUseCase } from '../../application/use-cases/confirm-appointment.use-case';
 import { ListAppointmentsUseCase } from '../../application/use-cases/list-appointments.use-case';
+import { GetDoctorNextAppointmentsUseCase } from '../../application/use-cases/get-doctor-next-appointments.use-case';
+import { GetAppointmentUseCase } from '../../application/use-cases/get-appointment.use-case';
+import { GetActiveConsultationUseCase } from '../../application/use-cases/get-active-consultation.use-case';
+import { RescheduleAppointmentUseCase } from '../../application/use-cases/reschedule-appointment.use-case';
+import { DeleteAppointmentUseCase } from '../../application/use-cases/delete-appointment.use-case';
 import { CreateAppointmentDto } from '../dtos/create-appointment.dto';
 import { CompleteAppointmentDto } from '../dtos/complete-appointment.dto';
 import { CancelAppointmentDto } from '../dtos/cancel-appointment.dto';
+import { RescheduleAppointmentDto } from '../dtos/reschedule-appointment.dto';
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
@@ -28,16 +34,21 @@ export class AppointmentsController {
         private readonly cancelAppointmentUseCase: CancelAppointmentUseCase,
         private readonly confirmAppointmentUseCase: ConfirmAppointmentUseCase,
         private readonly listAppointmentsUseCase: ListAppointmentsUseCase,
+        private readonly getDoctorNextAppointmentsUseCase: GetDoctorNextAppointmentsUseCase,
+        private readonly getAppointmentUseCase: GetAppointmentUseCase,
+        private readonly getActiveConsultationUseCase: GetActiveConsultationUseCase,
+        private readonly rescheduleAppointmentUseCase: RescheduleAppointmentUseCase,
+        private readonly deleteAppointmentUseCase: DeleteAppointmentUseCase,
     ) { }
 
     @Post()
-    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA, UserRole.MEDICO)
     @ApiOperation({ summary: 'Agendar una nueva cita' })
-    async create(@Body() dto: CreateAppointmentDto) {
+    async create(@Body() dto: CreateAppointmentDto, @Request() req: any) {
         const appointment = await this.scheduleAppointmentUseCase.execute({
             ...dto,
             startTime: new Date(dto.startTime),
-        });
+        }, req.user);
         return AppointmentMapper.toResponse(appointment);
     }
 
@@ -60,6 +71,31 @@ export class AppointmentsController {
             end: end ? new Date(end) : undefined,
         });
         return appointments.map(AppointmentMapper.toResponse);
+    }
+
+    @Get('next')
+    @Roles(UserRole.MEDICO)
+    @ApiOperation({ summary: 'Obtener las siguientes citas del día para el médico autenticado' })
+    async getNext(@Request() req: any, @Query('date') date?: string) {
+        const clientDate = date ? new Date(date) : undefined;
+        const appointments = await this.getDoctorNextAppointmentsUseCase.execute(req.user.id, clientDate);
+        return appointments.map(AppointmentMapper.toResponse);
+    }
+
+    @Get('active-consultation')
+    @Roles(UserRole.MEDICO)
+    @ApiOperation({ summary: 'Obtener la consulta que el médico tiene actualmente en curso' })
+    async getActiveConsultation(@Request() req: any) {
+        const appointment = await this.getActiveConsultationUseCase.execute(req.user.id);
+        return appointment ? AppointmentMapper.toResponse(appointment) : null;
+    }
+
+    @Get(':id')
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA, UserRole.MEDICO)
+    @ApiOperation({ summary: 'Obtener detalles de una cita específica' })
+    async findOne(@Param('id') id: string, @Request() req: any) {
+        const appointment = await this.getAppointmentUseCase.execute(id, req.user);
+        return AppointmentMapper.toResponse(appointment);
     }
 
     @Patch(':id/start')
@@ -96,5 +132,29 @@ export class AppointmentsController {
         @Request() req: any,
     ) {
         return this.cancelAppointmentUseCase.execute(id, req.user, dto.reason);
+    }
+
+    @Patch(':id/reschedule')
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
+    @ApiOperation({ summary: 'Reprogramar cita (Admin/Rec)' })
+    async reschedule(
+        @Param('id') id: string,
+        @Body() dto: RescheduleAppointmentDto,
+        @Request() req: any,
+    ) {
+        const appointment = await this.rescheduleAppointmentUseCase.execute(
+            id,
+            new Date(dto.startTime),
+            dto.durationMinutes,
+            req.user,
+        );
+        return AppointmentMapper.toResponse(appointment);
+    }
+
+    @Delete(':id')
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
+    @ApiOperation({ summary: 'Eliminar una cita cancelada del calendario (Admin/Rec)' })
+    async remove(@Param('id') id: string, @Request() req: any) {
+        return this.deleteAppointmentUseCase.execute(id, req.user);
     }
 }

@@ -2,6 +2,7 @@ import { Inject, Injectable, ConflictException, ForbiddenException } from '@nest
 import { IAPPOINTMENT_REPOSITORY, type IAppointmentRepository } from '../../domain/repositories/appointment.repository.interface';
 import { Appointment } from '../../domain/entities/appointment.entity';
 import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
+import { UserRole } from '../../../../common/enums/user-role.enum';
 
 @Injectable()
 export class ScheduleAppointmentUseCase {
@@ -10,14 +11,22 @@ export class ScheduleAppointmentUseCase {
         private readonly appointmentRepository: IAppointmentRepository,
     ) { }
 
-    async execute(data: {
-        patientId: string;
-        doctorId: string;
-        startTime: Date;
-        durationMinutes?: number;
-        reason?: string;
-        status?: AppointmentStatus;
-    }): Promise<Appointment> {
+    async execute(
+        data: {
+            patientId: string;
+            doctorId: string;
+            startTime: Date;
+            durationMinutes?: number;
+            reason?: string;
+            status?: AppointmentStatus;
+        },
+        user: { id: string, role: string }
+    ): Promise<Appointment> {
+        // Validación de Médico: si el usuario es médico, solo puede crear citas para sí mismo
+        if (user.role === UserRole.MEDICO && user.id !== data.doctorId) {
+            throw new ForbiddenException('Un médico solo puede agendar citas para sí mismo.');
+        }
+
         // 1. Duración Inteligente
         let duration = data.durationMinutes;
 

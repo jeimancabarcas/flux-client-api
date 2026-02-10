@@ -72,4 +72,8 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
         const entities = await qb.getMany();
         return entities.map(AppointmentMapper.toDomain);
     }
+
+    async delete(id: string): Promise<void> {
+        await this.repository.delete(id);
+    }
 }
