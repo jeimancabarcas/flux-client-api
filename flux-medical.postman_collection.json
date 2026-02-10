@@ -805,6 +805,50 @@
                     "response": []
                 },
                 {
+                    "name": "Próxima Cita del Paciente",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/appointments/patient/:id/next?date=2026-02-10T14:00:00Z",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "appointments",
+                                "patient",
+                                ":id",
+                                "next"
+                            ],
+                            "query": [
+                                {
+                                    "key": "date",
+                                    "value": "2026-02-10T14:00:00Z",
+                                    "description": "Fecha y hora de referencia para buscar la próxima cita (opcional, por defecto es ahora)"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Retorna la cita más cercana en el futuro que se encuentre en estado PENDIENTE o CONFIRMADA para el paciente indicado."
+                    },
+                    "response": []
+                },
+                {
                     "name": "Listar Citas (Calendario)",
                     "request": {
                         "auth": {

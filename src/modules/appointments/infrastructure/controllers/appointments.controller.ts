@@ -12,6 +12,7 @@ import { GetActiveConsultationUseCase } from '../../application/use-cases/get-ac
 import { RescheduleAppointmentUseCase } from '../../application/use-cases/reschedule-appointment.use-case';
 import { DeleteAppointmentUseCase } from '../../application/use-cases/delete-appointment.use-case';
 import { ListPatientAppointmentsUseCase } from '../../application/use-cases/list-patient-appointments.use-case';
+import { GetPatientNextAppointmentUseCase } from '../../application/use-cases/get-patient-next-appointment.use-case';
 import { CreateAppointmentDto } from '../dtos/create-appointment.dto';
 import { CompleteAppointmentDto } from '../dtos/complete-appointment.dto';
 import { CancelAppointmentDto } from '../dtos/cancel-appointment.dto';
@@ -41,6 +42,7 @@ export class AppointmentsController {
         private readonly rescheduleAppointmentUseCase: RescheduleAppointmentUseCase,
         private readonly deleteAppointmentUseCase: DeleteAppointmentUseCase,
         private readonly listPatientAppointmentsUseCase: ListPatientAppointmentsUseCase,
+        private readonly getPatientNextAppointmentUseCase: GetPatientNextAppointmentUseCase,
     ) { }
 
     @Post()
@@ -109,6 +111,18 @@ export class AppointmentsController {
             data: result.data.map(AppointmentMapper.toResponse),
             total: result.total,
         };
+    }
+
+    @Get('patient/:id/next')
+    @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA, UserRole.MEDICO)
+    @ApiOperation({ summary: 'Obtener la siguiente cita pendiente/confirmada de un paciente' })
+    async getNextByPatient(
+        @Param('id') id: string,
+        @Query('date') date?: string
+    ) {
+        const referenceDate = date ? new Date(date) : undefined;
+        const appointment = await this.getPatientNextAppointmentUseCase.execute(id, referenceDate);
+        return appointment ? AppointmentMapper.toResponse(appointment) : null;
     }
 
     @Get(':id')
