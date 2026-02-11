@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { AppointmentStatus } from '../../../../domain/entities/appointment-status.enum';
 import { UserTypeOrmEntity } from '../../../../../users/infrastructure/persistence/typeorm/entities/user.typeorm-entity';
 import { PatientTypeOrmEntity } from '../../../../../patients/infrastructure/persistence/typeorm/entities/patient.typeorm-entity';
-import { ProductServiceTypeOrmEntity } from '../../../../../masters/infrastructure/persistence/typeorm/entities/product-service.typeorm-entity';
+import { InvoiceTypeOrmEntity } from '../../../../../billing/infrastructure/persistence/typeorm/entities/invoice.typeorm-entity';
 
 @Entity({ name: 'appointments', schema: 'fluxmedical' })
 export class AppointmentTypeOrmEntity {
@@ -54,12 +54,6 @@ export class AppointmentTypeOrmEntity {
     @JoinColumn({ name: 'doctor_id' })
     doctor: UserTypeOrmEntity;
 
-    @ManyToMany(() => ProductServiceTypeOrmEntity)
-    @JoinTable({
-        name: 'appointment_items',
-        joinColumn: { name: 'appointment_id', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'product_service_id', referencedColumnName: 'id' },
-        schema: 'fluxmedical'
-    })
-    items: ProductServiceTypeOrmEntity[];
+    @OneToMany(() => InvoiceTypeOrmEntity, invoice => invoice.appointment)
+    invoices: InvoiceTypeOrmEntity[];
 }

@@ -6,6 +6,21 @@ import { ProductServiceMapper } from '../../../../../masters/infrastructure/pers
 
 export class AppointmentMapper {
     static toDomain(entity: AppointmentTypeOrmEntity): Appointment {
+        let items: any[] = [];
+        if (entity.invoices && entity.invoices.length > 0) {
+            // Asumimos que la primera factura tiene los items actuales
+            const invoice = entity.invoices[0];
+            if (invoice.items) {
+                items = invoice.items.map(item => {
+                    if (item.productService) {
+                        return ProductServiceMapper.toDomain(item.productService);
+                    }
+                    // Si no está cargada la relación, al menos devolvemos un objeto parcial o lo ignoramos
+                    return null;
+                }).filter(i => i !== null);
+            }
+        }
+
         return new Appointment(
             entity.id,
             entity.patientId,
@@ -21,7 +36,7 @@ export class AppointmentMapper {
             entity.updatedAt,
             entity.patient ? PatientMapper.toDomain(entity.patient) : null,
             entity.doctor ? UserMapper.toDomain(entity.doctor) : null,
-            entity.items ? entity.items.map(ProductServiceMapper.toDomain) : [],
+            items,
         );
     }
 
@@ -37,9 +52,8 @@ export class AppointmentMapper {
         entity.notes = domain.notes;
         entity.actualStartTime = domain.actualStartTime;
         entity.actualEndTime = domain.actualEndTime;
-        if (domain.items) {
-            entity.items = domain.items.map(ProductServiceMapper.toPersistence);
-        }
+
+        // Ya no persistimos items directamente en la tabla de citas
         return entity;
     }
 

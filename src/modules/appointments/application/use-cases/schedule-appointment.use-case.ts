@@ -1,10 +1,15 @@
 import { Inject, Injectable, ConflictException, ForbiddenException } from '@nestjs/common';
 import { IAPPOINTMENT_REPOSITORY, type IAppointmentRepository } from '../../domain/repositories/appointment.repository.interface';
 import { IPRODUCT_SERVICE_REPOSITORY, type IProductServiceRepository } from '../../../masters/domain/repositories/product-service.repository.interface';
+import { IINVOICE_REPOSITORY, type IInvoiceRepository } from '../../../billing/domain/repositories/invoice.repository.interface';
 import { Appointment } from '../../domain/entities/appointment.entity';
 import { ProductService } from '../../../masters/domain/entities/product-service.entity';
 import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
 import { UserRole } from '../../../../common/enums/user-role.enum';
+import { Invoice } from '../../../billing/domain/entities/invoice.entity';
+import { InvoiceItem } from '../../../billing/domain/entities/invoice-item.entity';
+import { InvoiceStatus } from '../../../billing/domain/entities/invoice-status.enum';
+import { ResponsibilityStatus } from '../../../billing/domain/entities/responsibility-status.enum';
 
 @Injectable()
 export class ScheduleAppointmentUseCase {
@@ -13,6 +18,8 @@ export class ScheduleAppointmentUseCase {
         private readonly appointmentRepository: IAppointmentRepository,
         @Inject(IPRODUCT_SERVICE_REPOSITORY)
         private readonly productServiceRepository: IProductServiceRepository,
+        @Inject(IINVOICE_REPOSITORY)
+        private readonly invoiceRepository: IInvoiceRepository,
     ) { }
 
     async execute(
@@ -65,7 +72,7 @@ export class ScheduleAppointmentUseCase {
             }
         }
 
-        // 4. Crear y Guardar con estado personalizado
+        // 4. Crear y Guardar Cita
         const newAppointment = new Appointment(
             null,
             data.patientId,
@@ -84,7 +91,42 @@ export class ScheduleAppointmentUseCase {
             items,
         );
 
-        return this.appointmentRepository.save(newAppointment);
+        const savedAppointment = await this.appointmentRepository.save(newAppointment);
+
+        // 5. Crear Factura Borrador si hay items
+        if (items.length > 0 && savedAppointment.id) {
+            const invoiceItems = items.map(item => new InvoiceItem(
+                null,
+                null,
+                item.id!,
+                item.name,
+                1, // Cantidad por defecto
+                item.price,
+                item.price, // Por ahora todo al paciente
+                ResponsibilityStatus.PENDIENTE,
+                0,
+                ResponsibilityStatus.NOT_APPLICABLE,
+                item.price,
+                null
+            ));
+
+            const totalAmount = invoiceItems.reduce((sum, item) => sum + item.totalAmount, 0);
+
+            const draftInvoice = new Invoice(
+                null,
+                savedAppointment.id,
+                data.patientId,
+                null,
+                totalAmount,
+                InvoiceStatus.BORRADOR,
+                invoiceItems
+            );
+
+            await this.invoiceRepository.save(draftInvoice);
+        }
+
+        // Recargar para incluir la factura/items recién creados si el repo lo soporta
+        return (await this.appointmentRepository.findById(savedAppointment.id!)) || savedAppointment;
     }
 
     private async getDoctorConfigDuration(doctorId: string): Promise<number | null> {

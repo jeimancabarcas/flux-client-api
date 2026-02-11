@@ -18,11 +18,13 @@ import { GetPatientNextAppointmentUseCase } from './application/use-cases/get-pa
 import { IAPPOINTMENT_REPOSITORY } from './domain/repositories/appointment.repository.interface';
 import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-appointment.repository';
 import { MastersModule } from '../masters/masters.module';
+import { BillingModule } from '../billing/billing.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([AppointmentTypeOrmEntity]),
-        MastersModule
+        MastersModule,
+        BillingModule
     ],
     controllers: [AppointmentsController],
     providers: [

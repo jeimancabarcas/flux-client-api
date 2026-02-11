@@ -24,7 +24,15 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
     async findById(id: string): Promise<Appointment | null> {
         const entity = await this.repository.findOne({
             where: { id },
-            relations: ['patient', 'doctor', 'doctor.details', 'doctor.specialties', 'items']
+            relations: [
+                'patient',
+                'doctor',
+                'doctor.details',
+                'doctor.specialties',
+                'invoices',
+                'invoices.items',
+                'invoices.items.productService'
+            ]
         });
         return entity ? AppointmentMapper.toDomain(entity) : null;
     }
@@ -38,7 +46,9 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
             .leftJoinAndSelect('appointment.patient', 'patient')
             .leftJoinAndSelect('appointment.doctor', 'doctor')
             .leftJoinAndSelect('doctor.details', 'details')
-            .leftJoinAndSelect('appointment.items', 'items')
+            .leftJoinAndSelect('appointment.invoices', 'invoices')
+            .leftJoinAndSelect('invoices.items', 'invoiceItems')
+            .leftJoinAndSelect('invoiceItems.productService', 'productService')
             .where('appointment.doctorId = :doctorId', { doctorId })
             .andWhere('appointment.status NOT IN (:...excludedStatuses)', {
                 excludedStatuses: [AppointmentStatus.CANCELADA]
@@ -64,7 +74,9 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
             .leftJoinAndSelect('appointment.doctor', 'doctor')
             .leftJoinAndSelect('doctor.details', 'details')
             .leftJoinAndSelect('doctor.specialties', 'specialties')
-            .leftJoinAndSelect('appointment.items', 'items');
+            .leftJoinAndSelect('appointment.invoices', 'invoices')
+            .leftJoinAndSelect('invoices.items', 'invoiceItems')
+            .leftJoinAndSelect('invoiceItems.productService', 'productService');
 
         if (filters?.doctorId) qb.andWhere('appointment.doctorId = :doctorId', { doctorId: filters.doctorId });
         if (filters?.patientId) qb.andWhere('appointment.patientId = :patientId', { patientId: filters.patientId });
