@@ -18,7 +18,7 @@ export class InvoiceMapper {
                 Number(itemEntity.entityAmount),
                 itemEntity.entityStatus,
                 Number(itemEntity.totalAmount),
-                itemEntity.convenioId,
+                itemEntity.entityAuthorizationCode,
             ))
             : [];
 
@@ -57,7 +57,7 @@ export class InvoiceMapper {
                 itemEntity.entityAmount = item.entityAmount;
                 itemEntity.entityStatus = item.entityStatus;
                 itemEntity.totalAmount = item.totalAmount;
-                itemEntity.convenioId = item.convenioId!;
+                itemEntity.entityAuthorizationCode = item.entityAuthorizationCode;
                 return itemEntity;
             });
         }

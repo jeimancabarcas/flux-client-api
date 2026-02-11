@@ -2,6 +2,8 @@ import { Inject, Injectable, ConflictException, ForbiddenException } from '@nest
 import { IAPPOINTMENT_REPOSITORY, type IAppointmentRepository } from '../../domain/repositories/appointment.repository.interface';
 import { IPRODUCT_SERVICE_REPOSITORY, type IProductServiceRepository } from '../../../masters/domain/repositories/product-service.repository.interface';
 import { IINVOICE_REPOSITORY, type IInvoiceRepository } from '../../../billing/domain/repositories/invoice.repository.interface';
+import { IPATIENT_REPOSITORY, type IPatientRepository } from '../../../patients/domain/repositories/patient.repository.interface';
+import { IAGREEMENT_REPOSITORY, type IAgreementRepository } from '../../../masters/domain/repositories/agreement.repository.interface';
 import { Appointment } from '../../domain/entities/appointment.entity';
 import { ProductService } from '../../../masters/domain/entities/product-service.entity';
 import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
@@ -20,6 +22,10 @@ export class ScheduleAppointmentUseCase {
         private readonly productServiceRepository: IProductServiceRepository,
         @Inject(IINVOICE_REPOSITORY)
         private readonly invoiceRepository: IInvoiceRepository,
+        @Inject(IPATIENT_REPOSITORY)
+        private readonly patientRepository: IPatientRepository,
+        @Inject(IAGREEMENT_REPOSITORY)
+        private readonly agreementRepository: IAgreementRepository,
     ) { }
 
     async execute(
@@ -95,20 +101,38 @@ export class ScheduleAppointmentUseCase {
 
         // 5. Crear Factura Borrador si hay items
         if (items.length > 0 && savedAppointment.id) {
-            const invoiceItems = items.map(item => new InvoiceItem(
-                null,
-                null,
-                item.id!,
-                item.name,
-                1, // Cantidad por defecto
-                item.price,
-                item.price, // Por ahora todo al paciente
-                ResponsibilityStatus.PENDIENTE,
-                0,
-                ResponsibilityStatus.NOT_APPLICABLE,
-                item.price,
-                null
-            ));
+            const patient = await this.patientRepository.findById(data.patientId);
+            const invoiceItems: InvoiceItem[] = [];
+
+            for (const item of items) {
+                let patientAmount = item.price;
+                let entityAmount = 0;
+                let entityStatus = ResponsibilityStatus.NOT_APPLICABLE;
+
+                if (patient?.prepagada) {
+                    const agreement = await this.agreementRepository.findByProductAndPrepagada(item.id!, patient.prepagada);
+                    if (agreement) {
+                        patientAmount = agreement.patientAmount;
+                        entityAmount = agreement.entityAmount;
+                        entityStatus = ResponsibilityStatus.PENDIENTE;
+                    }
+                }
+
+                invoiceItems.push(new InvoiceItem(
+                    null,
+                    null,
+                    item.id!,
+                    item.name,
+                    1,
+                    item.price,
+                    patientAmount,
+                    ResponsibilityStatus.PENDIENTE,
+                    entityAmount,
+                    entityStatus,
+                    item.price,
+                    null // entityAuthorizationCode starts as null
+                ));
+            }
 
             const totalAmount = invoiceItems.reduce((sum, item) => sum + item.totalAmount, 0);
 

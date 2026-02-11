@@ -46,8 +46,8 @@ export class InvoiceItemTypeOrmEntity {
     @Column('decimal', { precision: 12, scale: 2 })
     totalAmount: number;
 
-    @Column({ type: 'uuid', name: 'convenio_id', nullable: true })
-    convenioId: string;
+    @Column({ type: 'varchar', name: 'entity_authorization_code', nullable: true })
+    entityAuthorizationCode: string | null;
 
     @ManyToOne(() => InvoiceTypeOrmEntity, invoice => invoice.items)
     @JoinColumn({ name: 'invoice_id' })

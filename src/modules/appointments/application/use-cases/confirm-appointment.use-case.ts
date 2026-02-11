@@ -3,12 +3,23 @@ import { IAPPOINTMENT_REPOSITORY, type IAppointmentRepository } from '../../doma
 import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
 import { Appointment } from '../../domain/entities/appointment.entity';
 import { UserRole } from '../../../../common/enums/user-role.enum';
+import { IINVOICE_REPOSITORY, type IInvoiceRepository } from '../../../billing/domain/repositories/invoice.repository.interface';
+import { IPATIENT_REPOSITORY, type IPatientRepository } from '../../../patients/domain/repositories/patient.repository.interface';
+import { IAGREEMENT_REPOSITORY, type IAgreementRepository } from '../../../masters/domain/repositories/agreement.repository.interface';
+import { InvoiceStatus } from '../../../billing/domain/entities/invoice-status.enum';
+import { ResponsibilityStatus } from '../../../billing/domain/entities/responsibility-status.enum';
 
 @Injectable()
 export class ConfirmAppointmentUseCase {
     constructor(
         @Inject(IAPPOINTMENT_REPOSITORY)
         private readonly appointmentRepository: IAppointmentRepository,
+        @Inject(IINVOICE_REPOSITORY)
+        private readonly invoiceRepository: IInvoiceRepository,
+        @Inject(IPATIENT_REPOSITORY)
+        private readonly patientRepository: IPatientRepository,
+        @Inject(IAGREEMENT_REPOSITORY)
+        private readonly agreementRepository: IAgreementRepository,
     ) { }
 
     async execute(
@@ -48,6 +59,36 @@ export class ConfirmAppointmentUseCase {
             appointment.items,
         );
 
-        return await this.appointmentRepository.save(updatedAppointment);
+        const savedAppointment = await this.appointmentRepository.save(updatedAppointment);
+
+        // Actualizar Factura Borrador a EMITIDA y reaplicar lógica de convenios
+        const invoice = await this.invoiceRepository.findByAppointmentId(appointmentId);
+        if (invoice && invoice.status === InvoiceStatus.BORRADOR) {
+            const patient = await this.patientRepository.findById(appointment.patientId);
+
+            for (const item of invoice.items) {
+                let patientAmount = item.unitPrice * item.quantity;
+                let entityAmount = 0;
+                let entityStatus = ResponsibilityStatus.NOT_APPLICABLE;
+
+                if (patient?.prepagada) {
+                    const agreement = await this.agreementRepository.findByProductAndPrepagada(item.productServiceId, patient.prepagada);
+                    if (agreement) {
+                        patientAmount = agreement.patientAmount * item.quantity;
+                        entityAmount = agreement.entityAmount * item.quantity;
+                        entityStatus = ResponsibilityStatus.PENDIENTE;
+                    }
+                }
+
+                item.patientAmount = patientAmount;
+                item.entityAmount = entityAmount;
+                item.entityStatus = entityStatus;
+            }
+
+            invoice.status = InvoiceStatus.EMITIDA;
+            await this.invoiceRepository.save(invoice);
+        }
+
+        return savedAppointment;
     }
 }

@@ -13,6 +13,6 @@ export class InvoiceItem {
         public entityAmount: number,
         public entityStatus: ResponsibilityStatus,
         public totalAmount: number,
-        public convenioId: string | null = null,
+        public entityAuthorizationCode: string | null = null,
     ) { }
 }

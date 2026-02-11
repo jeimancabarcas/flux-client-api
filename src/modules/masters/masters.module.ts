@@ -6,6 +6,7 @@ import { ProductServiceTypeOrmEntity } from './infrastructure/persistence/typeor
 import { EpsController } from './infrastructure/controllers/eps.controller';
 import { PrepagadaController } from './infrastructure/controllers/prepagada.controller';
 import { ProductServiceController } from './infrastructure/controllers/product-service.controller';
+import { AgreementsController } from './infrastructure/controllers/agreements.controller';
 import { CreateEpsUseCase } from './application/use-cases/create-eps.use-case';
 import { ListEpsUseCase } from './application/use-cases/list-eps.use-case';
 import { UpdateEpsUseCase } from './application/use-cases/update-eps.use-case';
@@ -18,22 +19,30 @@ import { CreateProductServiceUseCase } from './application/use-cases/create-prod
 import { ListProductServicesUseCase } from './application/use-cases/list-product-services.use-case';
 import { UpdateProductServiceUseCase } from './application/use-cases/update-product-service.use-case';
 import { DeleteProductServiceUseCase } from './application/use-cases/delete-product-service.use-case';
+import { CreateAgreementUseCase } from './application/use-cases/create-agreement.use-case';
+import { ListAgreementsUseCase } from './application/use-cases/list-agreements.use-case';
+import { UpdateAgreementUseCase } from './application/use-cases/update-agreement.use-case';
+import { DeleteAgreementUseCase } from './application/use-cases/delete-agreement.use-case';
 import { IEPS_REPOSITORY } from './domain/repositories/eps.repository.interface';
 import { IPREPAGADA_REPOSITORY } from './domain/repositories/prepagada.repository.interface';
 import { TypeOrmEpsRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-eps.repository';
 import { TypeOrmPrepagadaRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-prepagada.repository';
 import { IPRODUCT_SERVICE_REPOSITORY } from './domain/repositories/product-service.repository.interface';
 import { TypeOrmProductServiceRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-product-service.repository';
+import { AgreementTypeOrmEntity } from './infrastructure/persistence/typeorm/entities/agreement.typeorm-entity';
+import { IAGREEMENT_REPOSITORY } from './domain/repositories/agreement.repository.interface';
+import { TypeOrmAgreementRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-agreement.repository';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             EpsTypeOrmEntity,
             PrepagadaTypeOrmEntity,
-            ProductServiceTypeOrmEntity
+            ProductServiceTypeOrmEntity,
+            AgreementTypeOrmEntity
         ]),
     ],
-    controllers: [EpsController, PrepagadaController, ProductServiceController],
+    controllers: [EpsController, PrepagadaController, ProductServiceController, AgreementsController],
     providers: [
         CreateEpsUseCase,
         ListEpsUseCase,
@@ -47,6 +56,10 @@ import { TypeOrmProductServiceRepository } from './infrastructure/persistence/ty
         ListProductServicesUseCase,
         UpdateProductServiceUseCase,
         DeleteProductServiceUseCase,
+        CreateAgreementUseCase,
+        ListAgreementsUseCase,
+        UpdateAgreementUseCase,
+        DeleteAgreementUseCase,
         {
             provide: IEPS_REPOSITORY,
             useClass: TypeOrmEpsRepository,
@@ -59,7 +72,11 @@ import { TypeOrmProductServiceRepository } from './infrastructure/persistence/ty
             provide: IPRODUCT_SERVICE_REPOSITORY,
             useClass: TypeOrmProductServiceRepository,
         },
+        {
+            provide: IAGREEMENT_REPOSITORY,
+            useClass: TypeOrmAgreementRepository,
+        },
     ],
-    exports: [IEPS_REPOSITORY, IPREPAGADA_REPOSITORY, IPRODUCT_SERVICE_REPOSITORY],
+    exports: [IEPS_REPOSITORY, IPREPAGADA_REPOSITORY, IPRODUCT_SERVICE_REPOSITORY, IAGREEMENT_REPOSITORY],
 })
 export class MastersModule { }

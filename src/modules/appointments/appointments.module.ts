@@ -19,12 +19,14 @@ import { IAPPOINTMENT_REPOSITORY } from './domain/repositories/appointment.repos
 import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-appointment.repository';
 import { MastersModule } from '../masters/masters.module';
 import { BillingModule } from '../billing/billing.module';
+import { PatientsModule } from '../patients/patients.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([AppointmentTypeOrmEntity]),
         MastersModule,
-        BillingModule
+        BillingModule,
+        PatientsModule
     ],
     controllers: [AppointmentsController],
     providers: [
