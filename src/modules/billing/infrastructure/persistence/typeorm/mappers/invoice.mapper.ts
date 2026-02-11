@@ -58,6 +58,8 @@ export class InvoiceMapper {
                 itemEntity.entityStatus = item.entityStatus;
                 itemEntity.totalAmount = item.totalAmount;
                 itemEntity.entityAuthorizationCode = item.entityAuthorizationCode;
+                if (item.invoiceId) itemEntity.invoiceId = item.invoiceId;
+                itemEntity.invoice = entity;
                 return itemEntity;
             });
         }

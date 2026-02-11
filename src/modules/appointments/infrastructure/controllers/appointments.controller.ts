@@ -23,6 +23,7 @@ import { Roles } from '../../../../common/decorators/roles.decorator';
 import { UserRole } from '../../../../common/enums/user-role.enum';
 import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
 import { AppointmentMapper } from '../persistence/typeorm/mappers/appointment.mapper';
+import { ConfirmAppointmentDto } from '../dtos/confirm-appointment.dto';
 
 @ApiTags('Appointments')
 @ApiBearerAuth()
@@ -148,8 +149,12 @@ export class AppointmentsController {
     @Patch(':id/confirm')
     @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
     @ApiOperation({ summary: 'Confirmar llegada/asistencia (Admin/Rec)' })
-    async confirm(@Param('id') id: string, @Request() req: any) {
-        const appointment = await this.confirmAppointmentUseCase.execute(id, req.user.role);
+    async confirm(
+        @Param('id') id: string,
+        @Body() dto: ConfirmAppointmentDto,
+        @Request() req: any
+    ) {
+        const appointment = await this.confirmAppointmentUseCase.execute(id, req.user.role, dto);
         return AppointmentMapper.toResponse(appointment);
     }
 

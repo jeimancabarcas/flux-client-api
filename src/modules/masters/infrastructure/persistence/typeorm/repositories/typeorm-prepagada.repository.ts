@@ -24,6 +24,11 @@ export class TypeOrmPrepagadaRepository implements IPrepagadaRepository {
         return entity ? PrepagadaMapper.toDomain(entity) : null;
     }
 
+    async findByName(name: string): Promise<Prepagada | null> {
+        const entity = await this.repository.findOne({ where: { name } });
+        return entity ? PrepagadaMapper.toDomain(entity) : null;
+    }
+
     async findAll(): Promise<Prepagada[]> {
         const entities = await this.repository.find({ order: { name: 'ASC' } });
         return entities.map(PrepagadaMapper.toDomain);
