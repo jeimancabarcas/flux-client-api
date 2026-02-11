@@ -1,4 +1,5 @@
 import { AppointmentStatus } from './appointment-status.enum';
+import { ProductService } from '../../../masters/domain/entities/product-service.entity';
 
 export class Appointment {
     constructor(
@@ -16,6 +17,7 @@ export class Appointment {
         public readonly updatedAt: Date | null = null,
         public readonly patient: any | null = null,
         public readonly doctor: any | null = null,
+        public readonly items: ProductService[] = [],
     ) { }
 
     static create(
@@ -24,6 +26,7 @@ export class Appointment {
         startTime: Date,
         durationMinutes: number,
         reason?: string,
+        items: ProductService[] = [],
     ): Appointment {
         const endTime = new Date(startTime.getTime() + durationMinutes * 60000);
         return new Appointment(
@@ -35,6 +38,13 @@ export class Appointment {
             AppointmentStatus.PENDIENTE,
             reason ?? null,
             null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            items,
         );
     }
 }

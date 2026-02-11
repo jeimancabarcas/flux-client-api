@@ -17,9 +17,13 @@ import { ListPatientAppointmentsUseCase } from './application/use-cases/list-pat
 import { GetPatientNextAppointmentUseCase } from './application/use-cases/get-patient-next-appointment.use-case';
 import { IAPPOINTMENT_REPOSITORY } from './domain/repositories/appointment.repository.interface';
 import { TypeOrmAppointmentRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-appointment.repository';
+import { MastersModule } from '../masters/masters.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([AppointmentTypeOrmEntity])],
+    imports: [
+        TypeOrmModule.forFeature([AppointmentTypeOrmEntity]),
+        MastersModule
+    ],
     controllers: [AppointmentsController],
     providers: [
         ScheduleAppointmentUseCase,

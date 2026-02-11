@@ -80,9 +80,13 @@ export class AppointmentsController {
     @Get('next')
     @Roles(UserRole.MEDICO)
     @ApiOperation({ summary: 'Obtener las siguientes citas del día para el médico autenticado' })
-    async getNext(@Request() req: any, @Query('date') date?: string) {
+    async getNext(
+        @Request() req: any,
+        @Query('date') date?: string,
+        @Query('order') order: 'ASC' | 'DESC' = 'DESC'
+    ) {
         const clientDate = date ? new Date(date) : undefined;
-        const appointments = await this.getDoctorNextAppointmentsUseCase.execute(req.user.id, clientDate);
+        const appointments = await this.getDoctorNextAppointmentsUseCase.execute(req.user.id, clientDate, order);
         return appointments.map(AppointmentMapper.toResponse);
     }
 
@@ -137,14 +141,16 @@ export class AppointmentsController {
     @Roles(UserRole.ADMIN, UserRole.MEDICO)
     @ApiOperation({ summary: 'Iniciar consulta (Médico)' })
     async start(@Param('id') id: string, @Request() req: any) {
-        return this.startAppointmentUseCase.execute(id, req.user);
+        const appointment = await this.startAppointmentUseCase.execute(id, req.user);
+        return AppointmentMapper.toResponse(appointment);
     }
 
     @Patch(':id/confirm')
     @Roles(UserRole.ADMIN, UserRole.RECEPCIONISTA)
     @ApiOperation({ summary: 'Confirmar llegada/asistencia (Admin/Rec)' })
     async confirm(@Param('id') id: string, @Request() req: any) {
-        return this.confirmAppointmentUseCase.execute(id, req.user.role);
+        const appointment = await this.confirmAppointmentUseCase.execute(id, req.user.role);
+        return AppointmentMapper.toResponse(appointment);
     }
 
     @Patch(':id/complete')
@@ -155,7 +161,8 @@ export class AppointmentsController {
         @Body() dto: CompleteAppointmentDto,
         @Request() req: any,
     ) {
-        return this.completeAppointmentUseCase.execute(id, req.user, dto.notes);
+        const appointment = await this.completeAppointmentUseCase.execute(id, req.user, dto.notes);
+        return AppointmentMapper.toResponse(appointment);
     }
 
     @Patch(':id/cancel')
@@ -166,7 +173,8 @@ export class AppointmentsController {
         @Body() dto: CancelAppointmentDto,
         @Request() req: any,
     ) {
-        return this.cancelAppointmentUseCase.execute(id, req.user, dto.reason);
+        const appointment = await this.cancelAppointmentUseCase.execute(id, req.user, dto.reason);
+        return AppointmentMapper.toResponse(appointment);
     }
 
     @Patch(':id/reschedule')

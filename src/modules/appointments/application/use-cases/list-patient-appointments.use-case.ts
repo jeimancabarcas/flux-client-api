@@ -16,6 +16,7 @@ export class ListPatientAppointmentsUseCase {
 
         const appointments = await this.appointmentRepository.findAll({
             patientId,
+            order: 'DESC',
         });
 
         // Simular paginación ya que el repositorio findAll actual devuelve todo

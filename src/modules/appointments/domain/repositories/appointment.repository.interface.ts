@@ -15,6 +15,7 @@ export interface IAppointmentRepository {
         status?: AppointmentStatus;
         start?: Date;
         end?: Date;
+        order?: 'ASC' | 'DESC';
     }): Promise<Appointment[]>;
     delete(id: string): Promise<void>;
 }

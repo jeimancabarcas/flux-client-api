@@ -49,6 +49,9 @@ export class RescheduleAppointmentUseCase {
             appointment.actualEndTime,
             appointment.createdAt,
             new Date(), // updatedAt
+            appointment.patient,
+            appointment.doctor,
+            appointment.items,
         );
 
         return await this.appointmentRepository.save(updatedAppointment);

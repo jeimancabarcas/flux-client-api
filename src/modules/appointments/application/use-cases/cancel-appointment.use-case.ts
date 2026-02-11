@@ -15,7 +15,7 @@ export class CancelAppointmentUseCase {
         appointmentId: string,
         user: { id: string; role: string },
         reason?: string,
-    ): Promise<void> {
+    ): Promise<Appointment> {
         const appointment = await this.appointmentRepository.findById(appointmentId);
 
         if (!appointment) {
@@ -49,8 +49,11 @@ export class CancelAppointmentUseCase {
             appointment.actualEndTime,
             appointment.createdAt,
             new Date(),
+            appointment.patient,
+            appointment.doctor,
+            appointment.items,
         );
 
-        await this.appointmentRepository.save(updatedAppointment);
+        return await this.appointmentRepository.save(updatedAppointment);
     }
 }

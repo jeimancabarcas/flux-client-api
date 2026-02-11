@@ -710,7 +710,7 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/appointments/next?date=2026-02-09T08:00:00Z",
+                            "raw": "{{base_url}}/appointments/next?date=2026-02-10T05:00:00.000Z&order=DESC",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -721,8 +721,13 @@
                             "query": [
                                 {
                                     "key": "date",
-                                    "value": "2026-02-09T08:00:00Z",
+                                    "value": "2026-02-10T05:00:00.000Z",
                                     "description": "Fecha de referencia"
+                                },
+                                {
+                                    "key": "order",
+                                    "value": "DESC",
+                                    "description": "Ordenamiento: ASC o DESC"
                                 }
                             ]
                         }
@@ -955,7 +960,7 @@
                         "header": [],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"patientId\": \"uuid-paciente\",\n    \"doctorId\": \"uuid-medico\",\n    \"startTime\": \"2026-02-15T10:00:00Z\",\n    \"durationMinutes\": 30,\n    \"reason\": \"Control mensual - Seguimiento de tratamiento\",\n    \"status\": \"PENDIENTE\"\n}",
+                            "raw": "{\n    \"patientId\": \"uuid-paciente\",\n    \"doctorId\": \"uuid-medico\",\n    \"startTime\": \"2026-02-15T10:00:00Z\",\n    \"durationMinutes\": 30,\n    \"reason\": \"Control mensual - Seguimiento de tratamiento\",\n    \"status\": \"PENDIENTE\",\n    \"itemIds\": [\"uuid-cups-1\", \"uuid-cums-1\"]\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"

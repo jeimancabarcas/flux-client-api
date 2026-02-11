@@ -24,7 +24,7 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
     async findById(id: string): Promise<Appointment | null> {
         const entity = await this.repository.findOne({
             where: { id },
-            relations: ['patient', 'doctor', 'doctor.specialties']
+            relations: ['patient', 'doctor', 'doctor.details', 'doctor.specialties', 'items']
         });
         return entity ? AppointmentMapper.toDomain(entity) : null;
     }
@@ -37,6 +37,8 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
         const entities = await this.repository.createQueryBuilder('appointment')
             .leftJoinAndSelect('appointment.patient', 'patient')
             .leftJoinAndSelect('appointment.doctor', 'doctor')
+            .leftJoinAndSelect('doctor.details', 'details')
+            .leftJoinAndSelect('appointment.items', 'items')
             .where('appointment.doctorId = :doctorId', { doctorId })
             .andWhere('appointment.status NOT IN (:...excludedStatuses)', {
                 excludedStatuses: [AppointmentStatus.CANCELADA]
@@ -55,11 +57,14 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
         status?: AppointmentStatus;
         start?: Date;
         end?: Date;
+        order?: 'ASC' | 'DESC';
     }): Promise<Appointment[]> {
         const qb = this.repository.createQueryBuilder('appointment')
             .leftJoinAndSelect('appointment.patient', 'patient')
             .leftJoinAndSelect('appointment.doctor', 'doctor')
-            .leftJoinAndSelect('doctor.specialties', 'specialties');
+            .leftJoinAndSelect('doctor.details', 'details')
+            .leftJoinAndSelect('doctor.specialties', 'specialties')
+            .leftJoinAndSelect('appointment.items', 'items');
 
         if (filters?.doctorId) qb.andWhere('appointment.doctorId = :doctorId', { doctorId: filters.doctorId });
         if (filters?.patientId) qb.andWhere('appointment.patientId = :patientId', { patientId: filters.patientId });
@@ -68,7 +73,7 @@ export class TypeOrmAppointmentRepository implements IAppointmentRepository {
             qb.andWhere('appointment.startTime BETWEEN :start AND :end', { start: filters.start, end: filters.end });
         }
 
-        qb.orderBy('appointment.startTime', 'ASC');
+        qb.orderBy('appointment.startTime', filters?.order || 'ASC');
 
         const entities = await qb.getMany();
         return entities.map(AppointmentMapper.toDomain);

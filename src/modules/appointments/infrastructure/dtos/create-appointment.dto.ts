@@ -36,4 +36,9 @@ export class CreateAppointmentDto {
     @IsEnum(AppointmentStatus)
     @IsOptional()
     status?: AppointmentStatus;
+
+    @ApiPropertyOptional({ example: ['uuid-cat-1', 'uuid-cat-2'], description: 'IDs de CUPS/CUMS asociados' })
+    @IsUUID('all', { each: true })
+    @IsOptional()
+    itemIds?: string[];
 }

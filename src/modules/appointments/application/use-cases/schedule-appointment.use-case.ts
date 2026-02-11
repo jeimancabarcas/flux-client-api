@@ -1,6 +1,8 @@
 import { Inject, Injectable, ConflictException, ForbiddenException } from '@nestjs/common';
 import { IAPPOINTMENT_REPOSITORY, type IAppointmentRepository } from '../../domain/repositories/appointment.repository.interface';
+import { IPRODUCT_SERVICE_REPOSITORY, type IProductServiceRepository } from '../../../masters/domain/repositories/product-service.repository.interface';
 import { Appointment } from '../../domain/entities/appointment.entity';
+import { ProductService } from '../../../masters/domain/entities/product-service.entity';
 import { AppointmentStatus } from '../../domain/entities/appointment-status.enum';
 import { UserRole } from '../../../../common/enums/user-role.enum';
 
@@ -9,6 +11,8 @@ export class ScheduleAppointmentUseCase {
     constructor(
         @Inject(IAPPOINTMENT_REPOSITORY)
         private readonly appointmentRepository: IAppointmentRepository,
+        @Inject(IPRODUCT_SERVICE_REPOSITORY)
+        private readonly productServiceRepository: IProductServiceRepository,
     ) { }
 
     async execute(
@@ -19,6 +23,7 @@ export class ScheduleAppointmentUseCase {
             durationMinutes?: number;
             reason?: string;
             status?: AppointmentStatus;
+            itemIds?: string[];
         },
         user: { id: string, role: string }
     ): Promise<Appointment> {
@@ -51,16 +56,32 @@ export class ScheduleAppointmentUseCase {
             );
         }
 
-        // 3. Crear y Guardar con estado personalizado
+        // 3. Cargar Items del catálogo
+        const items: ProductService[] = [];
+        if (data.itemIds && data.itemIds.length > 0) {
+            for (const itemId of data.itemIds) {
+                const item = await this.productServiceRepository.findById(itemId);
+                if (item) items.push(item);
+            }
+        }
+
+        // 4. Crear y Guardar con estado personalizado
         const newAppointment = new Appointment(
             null,
             data.patientId,
             data.doctorId,
             startTime,
             endTime,
-            data.status || AppointmentStatus.PENDIENTE, // Usar el estado proporcionado o PENDIENTE por defecto
+            data.status || AppointmentStatus.PENDIENTE,
             data.reason || null,
             null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            items,
         );
 
         return this.appointmentRepository.save(newAppointment);
