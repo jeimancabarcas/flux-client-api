@@ -25,6 +25,7 @@ import { AuditInterceptor } from './modules/audit/infrastructure/interceptors/au
         url: configService.get<string>('DATABASE_URL'),
         schema: 'fluxmedical',
         autoLoadEntities: true,
+        //dropSchema: true,
         synchronize: true, // Only for development!
         ssl: true,
         extra: {

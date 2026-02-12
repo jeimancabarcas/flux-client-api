@@ -9,8 +9,8 @@ export class InvoiceTypeOrmEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'uuid', name: 'appointment_id' })
-    appointmentId: string;
+    @Column({ type: 'uuid', name: 'appointment_id', nullable: true })
+    appointmentId: string | null;
 
     @Column({ type: 'uuid', name: 'patient_id' })
     patientId: string;

@@ -4,7 +4,7 @@ import { InvoiceItem } from './invoice-item.entity';
 export class Invoice {
     constructor(
         public readonly id: string | null,
-        public readonly appointmentId: string,
+        public readonly appointmentId: string | null,
         public readonly patientId: string,
         public invoiceNumber: string | null,
         public totalAmount: number,

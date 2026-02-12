@@ -68,7 +68,7 @@ export class ConfirmAppointmentUseCase {
                 appointment.patientId,
                 null,
                 0,
-                InvoiceStatus.EMITIDA,
+                InvoiceStatus.PAGADA,
                 []
             );
         }
@@ -132,7 +132,7 @@ export class ConfirmAppointmentUseCase {
                 item.entityAuthorizationCode = entityAmount > 0 ? authCode : null;
             }
 
-            invoice.status = InvoiceStatus.EMITIDA;
+            invoice.status = InvoiceStatus.PAGADA;
             invoice.totalAmount = invoice.items.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
 
             await this.invoiceRepository.save(invoice);

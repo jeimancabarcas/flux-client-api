@@ -7,18 +7,25 @@ import { TypeOrmInvoiceRepository } from './infrastructure/persistence/typeorm/r
 
 import { BillingController } from './infrastructure/controllers/billing.controller';
 
+import { PatientsModule } from '../patients/patients.module';
+import { MastersModule } from '../masters/masters.module';
+import { CreateStandaloneInvoiceUseCase } from './application/use-cases/create-standalone-invoice.use-case';
+
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             InvoiceTypeOrmEntity,
             InvoiceItemTypeOrmEntity,
         ]),
+        PatientsModule,
+        MastersModule,
     ],
     providers: [
         {
             provide: IINVOICE_REPOSITORY,
             useClass: TypeOrmInvoiceRepository,
         },
+        CreateStandaloneInvoiceUseCase,
     ],
     controllers: [BillingController],
     exports: [IINVOICE_REPOSITORY],
