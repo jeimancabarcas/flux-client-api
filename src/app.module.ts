@@ -11,6 +11,7 @@ import { PatientsModule } from './modules/patients/patients.module';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { MastersModule } from './modules/masters/masters.module';
 import { BillingModule } from './modules/billing/billing.module';
+import { MedicalRecordsModule } from './modules/medical-records/medical-records.module';
 import { AuditInterceptor } from './modules/audit/infrastructure/interceptors/audit.interceptor';
 
 @Module({
@@ -43,6 +44,7 @@ import { AuditInterceptor } from './modules/audit/infrastructure/interceptors/au
     AppointmentsModule,
     MastersModule,
     BillingModule,
+    MedicalRecordsModule,
   ],
   controllers: [AppController],
   providers: [

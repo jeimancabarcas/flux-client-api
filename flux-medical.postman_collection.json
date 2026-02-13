@@ -1810,6 +1810,153 @@
                                 }
                             },
                             "response": []
+                        },
+                        {
+                            "name": "Crear Factura sin Cita (Standalone)",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"patientId\": \"ecf14a2d-8941-4009-85fa-c7d4eb6b54dc\",\n    \"items\": [\n        { \"id\": \"99fa3e21-f0ba-40cb-a158-5f3c2b058f45\", \"quantity\": 3 }\n    ],\n    \"paymentType\": \"PARTICULAR\",\n    \"prepagadaId\": \"419a2b0f-81e5-4fd8-a21c-ebb006868c1c\",\n    \"authorizationCode\": \"12312334\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/billing",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "billing"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Historia Clínica",
+                    "item": [
+                        {
+                            "name": "Registrar Historia Clínica",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"appointmentId\": \"uuid-cita\",\n    \"patientId\": \"uuid-paciente\",\n    \"reason\": \"Dolor abdominal y fiebre\",\n    \"currentIllness\": \"Paciente refiere dolor desde hace 2 días...\",\n    \"physicalExamination\": \"Abdomen blando, doloroso a la palpación...\",\n    \"diagnosisCode\": \"1A00.0\",\n    \"plan\": \"Iniciar tratamiento con analgésicos...\",\n    \"pediatricExtension\": {\n        \"weight\": 15.5,\n        \"height\": 105.2,\n        \"cephalicPerimeter\": 52.0,\n        \"abdominalPerimeter\": 60.5,\n        \"perinatalHistory\": \"Parto normal, sin complicaciones.\"\n    }\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/medical-records",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "medical-records"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Obtener Historial Clínico por Paciente",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/medical-records/patient/:id",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "medical-records",
+                                        "patient",
+                                        ":id"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "id",
+                                            "value": ""
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Obtener Historia por Cita",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/medical-records/appointment/:id",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "medical-records",
+                                        "appointment",
+                                        ":id"
+                                    ],
+                                    "variable": [
+                                        {
+                                            "key": "id",
+                                            "value": ""
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
                         }
                     ]
                 }
