@@ -27,8 +27,8 @@ export class TypeOrmMedicalRecordRepository implements IMedicalRecordRepository 
         return entity ? MedicalRecordMapper.toDomain(entity) : null;
     }
 
-    async findByAppointmentId(appointmentId: string): Promise<MedicalRecord | null> {
-        const entity = await this.repository.findOne({
+    async findByAppointmentId(appointmentId: string): Promise<MedicalRecord[]> {
+        const entities = await this.repository.find({
             where: { appointmentId: appointmentId as any },
             relations: {
                 pediatricExtension: true,
@@ -37,14 +37,17 @@ export class TypeOrmMedicalRecordRepository implements IMedicalRecordRepository 
             },
             order: { createdAt: 'DESC' }
         });
-        return entity ? MedicalRecordMapper.toDomain(entity) : null;
+        return entities.map(MedicalRecordMapper.toDomain);
     }
 
-    async findByPatientId(patientId: string): Promise<MedicalRecord[]> {
+    async findByPatientId(patientId: string, page = 1, limit = 5): Promise<MedicalRecord[]> {
+        const skip = (page - 1) * limit;
         const entities = await this.repository.find({
             where: { patientId },
             relations: ['pediatricExtension', 'patientBackground', 'physicalExamination'],
-            order: { createdAt: 'DESC' }
+            order: { createdAt: 'DESC' },
+            skip,
+            take: limit
         });
         return entities.map(MedicalRecordMapper.toDomain);
     }

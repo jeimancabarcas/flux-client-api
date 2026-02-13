@@ -1,5 +1,5 @@
-import { Controller, Post, Body, UseGuards, Request, Get, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Post, Body, UseGuards, Request, Get, Param, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../../common/guards/roles.guard';
 import { Roles } from '../../../../common/decorators/roles.decorator';
@@ -30,8 +30,18 @@ export class MedicalRecordsController {
     @Get('patient/:id')
     @Roles(UserRole.MEDICO)
     @ApiOperation({ summary: 'Obtener historial clínico de un paciente' })
-    async getByPatient(@Param('id') patientId: string) {
-        return await this.medicalRecordRepository.findByPatientId(patientId);
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    async getByPatient(
+        @Param('id') patientId: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 5,
+    ) {
+        return await this.medicalRecordRepository.findByPatientId(
+            patientId,
+            Number(page),
+            Number(limit),
+        );
     }
 
     @Get('appointment/:id')
