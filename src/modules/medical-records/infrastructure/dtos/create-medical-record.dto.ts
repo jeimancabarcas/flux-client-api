@@ -120,6 +120,38 @@ export class DiagnosisDto {
     type: string;
 }
 
+export class PrescriptionDto {
+    @ApiProperty({ example: '19901234-1' })
+    @IsString()
+    @IsNotEmpty()
+    cum: string;
+
+    @ApiProperty({ example: 'Acetaminofén 500mg' })
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+
+    @ApiProperty({ example: '500mg' })
+    @IsString()
+    @IsNotEmpty()
+    dosage: string;
+
+    @ApiProperty({ example: 'Cada 8 horas' })
+    @IsString()
+    @IsNotEmpty()
+    frequency: string;
+
+    @ApiProperty({ example: '7 días' })
+    @IsString()
+    @IsNotEmpty()
+    duration: string;
+
+    @ApiProperty({ example: 'Tomar con abundante agua' })
+    @IsString()
+    @IsOptional()
+    instructions?: string;
+}
+
 export class CreateMedicalRecordDto {
     @ApiProperty({ example: 'ecf14a2d-8941-4009-85fa-c7d4eb6b54dc' })
     @IsUUID()
@@ -152,6 +184,13 @@ export class CreateMedicalRecordDto {
     @ValidateNested({ each: true })
     @Type(() => DiagnosisDto)
     diagnoses: DiagnosisDto[];
+
+    @ApiProperty({ type: [PrescriptionDto], required: false })
+    @IsArray()
+    @IsOptional()
+    @ValidateNested({ each: true })
+    @Type(() => PrescriptionDto)
+    prescriptions?: PrescriptionDto[];
 
     @ApiProperty({ example: 'Iniciar tratamiento con analgésicos...' })
     @IsString()

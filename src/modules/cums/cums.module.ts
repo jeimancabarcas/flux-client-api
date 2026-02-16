@@ -4,6 +4,7 @@ import { CumTypeOrmEntity } from './infrastructure/persistence/typeorm/entities/
 import { ICUMS_REPOSITORY } from './domain/repositories/cums.repository.interface';
 import { TypeOrmCumsRepository } from './infrastructure/persistence/typeorm/repositories/typeorm-cum.repository';
 import { ImportCumsUseCase } from './application/use-cases/import-cums.use-case';
+import { SearchCumsUseCase } from './application/use-cases/search-cums.use-case';
 import { CumsController } from './infrastructure/controllers/cums.controller';
 
 @Module({
@@ -13,6 +14,7 @@ import { CumsController } from './infrastructure/controllers/cums.controller';
     controllers: [CumsController],
     providers: [
         ImportCumsUseCase,
+        SearchCumsUseCase,
         {
             provide: ICUMS_REPOSITORY,
             useClass: TypeOrmCumsRepository,

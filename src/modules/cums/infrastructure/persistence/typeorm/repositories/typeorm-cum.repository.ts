@@ -58,4 +58,50 @@ export class TypeOrmCumsRepository implements ICumsRepository {
     async clear(): Promise<void> {
         await this.repository.clear();
     }
+
+    async search(term: string): Promise<Cum[]> {
+        const query = this.repository.createQueryBuilder('cum')
+            .where('cum.producto ILIKE :term', { term: `%${term}%` })
+            .orWhere('cum.principioActivo ILIKE :term', { term: `%${term}%` })
+            .orWhere('cum.atc ILIKE :term', { term: `%${term}%` })
+            .take(50)
+            .getMany();
+
+        const entities = await query;
+
+        return entities.map(entity => new Cum(
+            entity.id,
+            entity.expediente,
+            entity.producto,
+            entity.titular,
+            entity.registroSanitario,
+            entity.fechaExpedicion,
+            entity.fechaVencimiento,
+            entity.estadoRegistro,
+            entity.expedienteCum,
+            entity.consecutivo,
+            entity.cantidadCum,
+            entity.descripcionComercial,
+            entity.estadoCum,
+            entity.fechaActivo,
+            entity.fechaInactivo,
+            entity.muestraMedica,
+            entity.unidad,
+            entity.atc,
+            entity.descripcionAtc,
+            entity.viaAdministracion,
+            entity.concentracion,
+            entity.principioActivo,
+            entity.unidadMedida,
+            entity.cantidad,
+            entity.unidadReferencia,
+            entity.formaFarmaceutica,
+            entity.nombreRol,
+            entity.tipoRol,
+            entity.modalidad,
+            entity.ium,
+            entity.createdAt,
+            entity.updatedAt
+        ));
+    }
 }

@@ -63,6 +63,7 @@ export class MedicalRecordMapper {
             entity.reason,
             entity.currentIllness,
             entity.diagnoses,
+            entity.prescriptions || [],
             entity.plan,
             physicalExamination,
             patientBackground,
@@ -81,6 +82,7 @@ export class MedicalRecordMapper {
         entity.reason = domain.reason;
         entity.currentIllness = domain.currentIllness;
         entity.diagnoses = domain.diagnoses;
+        entity.prescriptions = domain.prescriptions;
         entity.plan = domain.plan;
 
         if (domain.physicalExamination) {

@@ -32,6 +32,16 @@ export class MedicalRecordTypeOrmEntity {
     @Column('jsonb', { name: 'diagnoses', default: [] })
     diagnoses: { code: string; description: string; type: string }[];
 
+    @Column('jsonb', { name: 'prescriptions', default: [] })
+    prescriptions: {
+        cum: string;
+        name: string;
+        dosage: string;
+        frequency: string;
+        duration: string;
+        instructions?: string;
+    }[];
+
     @Column('text')
     plan: string;
 

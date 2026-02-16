@@ -65,6 +65,7 @@ export class CreateMedicalRecordUseCase {
             dto.reason,
             dto.currentIllness,
             dto.diagnoses,
+            dto.prescriptions || [],
             dto.plan,
             physicalExamination,
             patientBackground,
