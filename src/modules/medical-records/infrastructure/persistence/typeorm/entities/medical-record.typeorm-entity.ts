@@ -29,8 +29,8 @@ export class MedicalRecordTypeOrmEntity {
     @OneToOne(() => PhysicalExaminationTypeOrmEntity, (pe) => pe.medicalRecord, { cascade: true })
     physicalExamination: PhysicalExaminationTypeOrmEntity;
 
-    @Column('text', { name: 'diagnoses', array: true, default: '{}' })
-    diagnoses: string[]; // CIE-11 codes
+    @Column('jsonb', { name: 'diagnoses', default: [] })
+    diagnoses: { code: string; description: string; type: string }[];
 
     @Column('text')
     plan: string;

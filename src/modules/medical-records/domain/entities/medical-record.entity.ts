@@ -2,6 +2,12 @@ import { PediatricExtension } from './pediatric-extension.entity';
 import { PatientBackground } from './patient-background.entity';
 import { PhysicalExamination } from './physical-examination.entity';
 
+export interface Diagnosis {
+    code: string;
+    description: string;
+    type: string;
+}
+
 export class MedicalRecord {
     constructor(
         public readonly id: string | null,
@@ -10,7 +16,7 @@ export class MedicalRecord {
         public doctorId: string,
         public reason: string,
         public currentIllness: string,
-        public diagnoses: string[], // CIE-11 codes
+        public diagnoses: Diagnosis[], // CIE-11 codes and descriptions
         public plan: string,
         public physicalExamination: PhysicalExamination | null = null,
         public patientBackground: PatientBackground | null = null,

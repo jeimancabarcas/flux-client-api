@@ -103,6 +103,23 @@ export class PhysicalExaminationDto {
     height?: number;
 }
 
+export class DiagnosisDto {
+    @ApiProperty({ example: 'BA41.0' })
+    @IsString()
+    @IsNotEmpty()
+    code: string;
+
+    @ApiProperty({ example: 'Infarto agudo de miocardio' })
+    @IsString()
+    @IsNotEmpty()
+    description: string;
+
+    @ApiProperty({ example: 'RELACIONADO' })
+    @IsString()
+    @IsNotEmpty()
+    type: string;
+}
+
 export class CreateMedicalRecordDto {
     @ApiProperty({ example: 'ecf14a2d-8941-4009-85fa-c7d4eb6b54dc' })
     @IsUUID()
@@ -130,11 +147,11 @@ export class CreateMedicalRecordDto {
     @Type(() => PhysicalExaminationDto)
     physicalExamination?: PhysicalExaminationDto;
 
-    @ApiProperty({ example: ['1A00.0', '1A01.1'], isArray: true })
+    @ApiProperty({ type: [DiagnosisDto] })
     @IsArray()
-    @IsString({ each: true })
-    @IsNotEmpty()
-    diagnoses: string[];
+    @ValidateNested({ each: true })
+    @Type(() => DiagnosisDto)
+    diagnoses: DiagnosisDto[];
 
     @ApiProperty({ example: 'Iniciar tratamiento con analgésicos...' })
     @IsString()
