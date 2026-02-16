@@ -1869,7 +1869,7 @@
                                 "header": [],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"appointmentId\": \"uuid-cita\",\n    \"patientId\": \"uuid-paciente\",\n    \"reason\": \"Dolor abdominal y fiebre\",\n    \"currentIllness\": \"Paciente refiere dolor desde hace 2 días...\",\n    \"physicalExamination\": \"Abdomen blando, doloroso a la palpación...\",\n    \"diagnosisCode\": \"1A00.0\",\n    \"plan\": \"Iniciar tratamiento con analgésicos...\",\n    \"pediatricExtension\": {\n        \"weight\": 15.5,\n        \"height\": 105.2,\n        \"cephalicPerimeter\": 52.0,\n        \"abdominalPerimeter\": 60.5,\n        \"perinatalHistory\": \"Parto normal, sin complicaciones.\"\n    }\n}",
+                                    "raw": "{\n    \"appointmentId\": \"uuid-cita\",\n    \"patientId\": \"uuid-paciente\",\n    \"reason\": \"Dolor abdominal y fiebre\",\n    \"currentIllness\": \"Paciente refiere dolor desde hace 2 días...\",\n    \"physicalExamination\": {\n        \"content\": \"Abdomen blando, doloroso a la palpación...\",\n        \"heartRate\": 80,\n        \"respiratoryRate\": 18,\n        \"temperature\": 36.5\n    },\n    \"patientBackground\": {\n        \"pathological\": \"Hipertensión\",\n        \"surgical\": \"Apendicectomía\"\n    },\n    \"diagnoses\": [\n        {\n            \"code\": \"BA41.0\",\n            \"description\": \"Infarto agudo de miocardio\",\n            \"type\": \"PRINCIPAL\"\n        },\n        {\n            \"code\": \"GA16.Y\",\n            \"description\": \"Otras anomalías adquiridas especificadas del útero\",\n            \"type\": \"RELACIONADO\"\n        }\n    ],\n    \"plan\": \"Iniciar tratamiento con analgésicos...\",\n    \"pediatricExtension\": {\n        \"weight\": 15.5,\n        \"height\": 105.2,\n        \"cephalicPerimeter\": 52.0,\n        \"abdominalPerimeter\": 60.5,\n        \"perinatalHistory\": \"Parto normal, sin complicaciones.\"\n    }\n}",
                                     "options": {
                                         "raw": {
                                             "language": "json"
@@ -1955,6 +1955,103 @@
                                         }
                                     ]
                                 }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "ICD-11 (CIE-11)",
+                    "item": [
+                        {
+                            "name": "Buscar Diagnósticos (POST Form-Data)",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "q",
+                                            "value": "infarto",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "releaseId",
+                                            "value": "2025-01",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "linearization",
+                                            "value": "mms",
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/icd/search",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "icd",
+                                        "search"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Catálogo Medicamentos (CUMS)",
+                    "item": [
+                        {
+                            "name": "Importar Catálogo CUMS (Admin)",
+                            "request": {
+                                "auth": {
+                                    "type": "bearer",
+                                    "bearer": [
+                                        {
+                                            "key": "token",
+                                            "value": "{{token}}",
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "file",
+                                            "type": "file",
+                                            "src": []
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/cums/import",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "cums",
+                                        "import"
+                                    ]
+                                },
+                                "description": "Sube el archivo Excel del INVIMA. Solo accesible para administradores."
                             },
                             "response": []
                         }
