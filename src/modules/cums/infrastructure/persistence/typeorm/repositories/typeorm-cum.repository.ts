@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Brackets } from 'typeorm';
 import { ICumsRepository } from '../../../../domain/repositories/cums.repository.interface';
 import { Cum } from '../../../../domain/entities/cum.entity';
 import { CumTypeOrmEntity } from '../entities/cum.typeorm-entity';
@@ -61,9 +61,13 @@ export class TypeOrmCumsRepository implements ICumsRepository {
 
     async search(term: string): Promise<Cum[]> {
         const query = this.repository.createQueryBuilder('cum')
-            .where('cum.producto ILIKE :term', { term: `%${term}%` })
-            .orWhere('cum.principioActivo ILIKE :term', { term: `%${term}%` })
-            .orWhere('cum.atc ILIKE :term', { term: `%${term}%` })
+            .where('cum.ium IS NOT NULL')
+            .andWhere('cum.ium != :empty', { empty: '' })
+            .andWhere(new Brackets(qb => {
+                qb.where('cum.producto ILIKE :term', { term: `%${term}%` })
+                    .orWhere('cum.principioActivo ILIKE :term', { term: `%${term}%` })
+                    .orWhere('cum.atc ILIKE :term', { term: `%${term}%` });
+            }))
             .take(50)
             .getMany();
 

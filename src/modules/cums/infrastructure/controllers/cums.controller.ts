@@ -53,10 +53,7 @@ export class CumsController {
         try {
             const result = await this.searchCumsUseCase.execute(term);
             console.log(`Resultados encontrados: ${result.length}`);
-            return {
-                success: true,
-                data: result
-            };
+            return result;
         } catch (error) {
             console.error(`Error en búsqueda CUMS: ${error.message}`);
             throw new HttpException(`Error al buscar medicamentos: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
